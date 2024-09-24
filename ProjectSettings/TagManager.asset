@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Plant
   - Rock
+  - MovingPlatform
   layers:
   - Default
   - TransparentFX
