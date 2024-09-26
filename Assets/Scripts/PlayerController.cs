@@ -99,7 +99,14 @@ public class PlayerController : MonoBehaviour
 
     private void HandleJump()
     {
-        if (Input.GetButtonDown("Jump") && isGrounded)
+        // Jump Upgrade
+        timeSinceLeftCrouch += Time.deltaTime;
+        if (jumpUpgrade && Input.GetButtonDown("Jump") && (isCrouching || timeSinceLeftCrouch < 1) && isGrounded)
+        {
+            velocity.y = Mathf.Sqrt(superJumpForce * -2f * gravity);
+            isGrounded = false;
+        }
+        else if (Input.GetButtonDown("Jump") && isGrounded)
         {
             velocity.y = Mathf.Sqrt(jumpForce * -2f * gravity);
             isGrounded = false;
@@ -125,14 +132,6 @@ public class PlayerController : MonoBehaviour
 
     private void HandleUpgrades()
     {
-        // Jump Upgrade
-        timeSinceLeftCrouch += Time.deltaTime;
-        if (jumpUpgrade && Input.GetButtonDown("Jump") && (isCrouching || timeSinceLeftCrouch < 1))
-        {
-            velocity.y = Mathf.Sqrt(superJumpForce * -2f * gravity);
-            isGrounded = false;
-        }
-
         // Dash Upgrade
         timeSinceDashPressed += Time.deltaTime;
         if (dashUpgrade && Input.GetKeyDown(KeyCode.LeftShift) && timeSinceDashPressed > dashLength + dashCooldown)
