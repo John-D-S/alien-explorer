@@ -35,7 +35,7 @@ public class PlayerController : MonoBehaviour
     public float glideMovementMultiplier = 1.5f;
 
     private CharacterController controller;
-    private Camera playerCamera;
+    private GameObject playerCamera;
     private float verticalRotation = 0f;
     private Vector3 velocity;
     private bool isGrounded;
@@ -53,7 +53,8 @@ public class PlayerController : MonoBehaviour
     private void Start()
     {
         controller = GetComponent<CharacterController>();
-        playerCamera = GetComponentInChildren<Camera>();
+        //playerCamera = GetComponentInChildren<Camera>();
+        playerCamera = transform.GetChild(0).gameObject;
         Cursor.lockState = CursorLockMode.Locked;
     }
 
@@ -72,31 +73,38 @@ public class PlayerController : MonoBehaviour
     bool isSlipping = false;
     private void HandleMovement()
     {
-        float x = Input.GetAxisRaw("Horizontal");
-        float z = Input.GetAxisRaw("Vertical");
+        if(!isSlipping)
+        {
+            float x = Input.GetAxisRaw("Horizontal");
+            float z = Input.GetAxisRaw("Vertical");
 
-        Vector3 moveDirection = (transform.right * x + transform.forward * z).normalized;
-        float targetSpeed = isCrouching ? crouchSpeed : (Input.GetKey(KeyCode.LeftShift) ? maxSprintSpeed : maxWalkSpeed);
+            Vector3 moveDirection = (transform.right * x + transform.forward * z).normalized;
+            float targetSpeed = isCrouching ? crouchSpeed : (Input.GetKey(KeyCode.LeftShift) ? maxSprintSpeed : maxWalkSpeed);
 
-        // Smooth acceleration
-        Vector3 targetVelocity = moveDirection * targetSpeed;
-        float verticalVel = velocity.y;
-        velocity = Vector3.MoveTowards(new Vector3(velocity.x, 0, velocity.z), targetVelocity, acceleration * Time.deltaTime);
-        velocity.y = verticalVel;
+            // Smooth acceleration
+            Vector3 targetVelocity = moveDirection * targetSpeed + new Vector3(0, velocity.y, 0);
+            velocity = Vector3.MoveTowards(new Vector3(velocity.x, velocity.y, velocity.z), targetVelocity, acceleration * Time.deltaTime);
+        }
 
         if (isGrounded)
         {
             // Check for steep slopes and platforms
             RaycastHit hit;
-            if (Physics.Raycast(transform.position, Vector3.down, out hit, 3))
+            float sphereCastRadius = controller.radius;
+            float sphereCastDistance = controller.height / 2 + 0.2f; // Adding a small buffer
+            if (Physics.SphereCast(transform.position, sphereCastRadius, Vector3.down, out hit, sphereCastDistance))
             {
                 float slopeAngle = Vector3.Angle(hit.normal, Vector3.up);
                 Debug.Log(slopeAngle);
                 if (slopeAngle > maxSlopeAngle)
                 {
                     // Slide down the slope
+                    if(!isSlipping)
+                    {
+                        velocity = new Vector3(0, velocity.y, 0);
+                    }
                     isSlipping = true;
-                    velocity += acceleration * Vector3.ProjectOnPlane(Physics.gravity, hit.normal) * Time.deltaTime;
+                    velocity += Vector3.ProjectOnPlane(Physics.gravity, hit.normal) * Time.deltaTime;
                 }
                 else
                 {
@@ -118,12 +126,15 @@ public class PlayerController : MonoBehaviour
                     currentPlatform = null;
                 }
             }
-
-            velocity.y = gravity; // Apply gravity when grounded
+            if(!isSlipping)
+            {
+                velocity.y = gravity; // Apply gravity when grounded
+            }
         }
         else
         {
             currentPlatform = null;
+            isSlipping = false;
             velocity.y += gravity * Time.deltaTime;
         }
 
