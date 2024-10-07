@@ -123,6 +123,103 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &83278905
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 83278909}
+  - component: {fileID: 83278908}
+  - component: {fileID: 83278907}
+  - component: {fileID: 83278906}
+  m_Layer: 0
+  m_Name: TempWaterCube
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!65 &83278906
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 83278905}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!23 &83278907
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 83278905}
+  m_Enabled: 1
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
+--- !u!33 &83278908
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 83278905}
+  m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!4 &83278909
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 83278905}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 15.54, y: 0.78, z: 3.0453162}
+  m_LocalScale: {x: 8.0092, y: 8.0092, z: 8.0092}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 8
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!43 &378963769
 Mesh:
   m_ObjectHideFlags: 0
@@ -3071,11 +3168,11 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6034643083813108574}
+  - component: {fileID: 7231325700141366683}
   - component: {fileID: 7231325700141366680}
   - component: {fileID: 6409901302255641064}
   - component: {fileID: 7231325700141366682}
   - component: {fileID: 7231325700141366681}
-  - component: {fileID: 7231325700141366683}
   - component: {fileID: 7231325700141366684}
   m_Layer: 0
   m_Name: PlayerCapsule
@@ -3277,34 +3374,68 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Motor: {fileID: 7231325700141366681}
-  DefaultWalkSpeed: 8
-  DefaultMovementSharpness: 15
-  OrientationSharpness: 10
-  DefaultWalkAirSpeed: 8
-  DefaultWalkAirAccel: 15
-  DefaultDrag: 0.1
-  SprintMultiplier: 2
-  CrouchMultiplier: 0.5
-  AllowJumpingWhenSliding: 0
-  NormalJumpUpSpeed: 10
-  NormalJumpForwardSpeed: 0
-  JumpPreGroundingGraceTime: 0
-  JumpPostGroundingGraceTime: 0
-  SuperJumpMultiplier: 3
-  IgnoredColliders: []
-  BonusOrientationSharpness: 10
-  DefaultGravity: {x: 0, y: -30, z: 0}
-  CrouchedCapsuleHeight: 1
-  DashLength: 0.5
-  DashCooldownLength: 5
-  DashSpeed: 15
-  CinemachineCameraTarget: {fileID: 1585988830127134911}
-  TopClamp: 90
-  BottomClamp: -90
-  CinemachineBaseHeight: 1.375
-  RotationSpeed: 1
-  CrouchLerpSpeed: 6
+  config:
+    BaseSpeed: 4
+    MovementSharpness: 15
+    BaseAirSpeed: 4
+    AirAccel: 15
+    AirDrag: 0.1
+    SprintMultiplier: 2
+    CrouchMultiplier: 0.5
+    AllowJumpingWhenSliding: 0
+    JumpUpSpeed: 10
+    JumpPreGroundingGraceTime: 0
+    JumpPostGroundingGraceTime: 0
+    SuperJumpMultiplier: 3
+    WaterSwimUpAccel: 10
+    WaterBaseSpeed: 3
+    WaterMovementSharpness: 4
+    WaterBaseAirSpeed: 3
+    WaterAirAccel: 7.5
+    WaterAirDrag: 0.8
+    WaterJumpUpSpeed: 3
+    WaterTerminalVelocity: 3
+    Buoyancy: 25
+    IgnoredColliders: []
+    DefaultGravityStrength: 30
+    CrouchedCapsuleHeight: 1
+    BaseTerminalVelocity: 50
+    DashLength: 0.1
+    DashCooldownLength: 2
+    DashSpeed: 20
+    GlideUpAccel: 0.5
+    HazardRespawnTime: 3
+    CinemachineCameraTarget: {fileID: 1585988830127134911}
+    CinemachineBaseHeight: 1.375
+    RotationSpeed: 1
+    CrouchLerpSpeed: 4
+  PlayerUpgrades:
+    Jump: 0
+    Dash: 0
+    Swim: 0
+    Glide: 0
+    Heat: 0
+    Cold: 0
+    Cut: 0
+    Smash: 0
   _tgtYaw: {x: 0, y: 0, z: 0, w: 0}
+  _isSprinting: 0
+  _isUnderwater: 0
+  _baseSpeed: 0
+  _finalSpeed: 0
+  _movementSharpness: 0
+  _baseAirSpeed: 0
+  _finalAirSpeed: 0
+  _airAccel: 0
+  _drag: 0
+  _jumpUpSpeed: 0
+  _gravity: {x: 0, y: 0, z: 0}
+  _terminalVelocity: 0
+  _holdJumpAccel: 0
+  _isCrouching: 0
+  _jumpConsumed: 0
+  _movementState: 0
+  tempwatercollider: {fileID: 83278906}
 --- !u!54 &7231325700141366684
 Rigidbody:
   m_ObjectHideFlags: 0
