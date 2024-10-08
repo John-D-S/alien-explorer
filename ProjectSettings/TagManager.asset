@@ -6,11 +6,12 @@ TagManager:
   tags:
   - Plant
   - Rock
+  - CinemachineTarget
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - SPECIAL
   - Water
   - UI
   - WaterBarrier
