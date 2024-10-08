@@ -3,11 +3,13 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour
 {
     [Header("Movement")]
-    public float walkSpeed = 5f;
-    public float sprintSpeed = 8f;
+    public float maxWalkSpeed = 5f;
+    public float maxSprintSpeed = 8f;
+    public float acceleration = 25f;
     public float jumpForce = 1f;
     public float crouchSpeed = 2.5f;
     public float gravity = -9.81f;
+    public float maxSlopeAngle = 45f;
 
     [Header("Camera")]
     public float mouseSensitivity = 2f;
@@ -33,7 +35,7 @@ public class PlayerController : MonoBehaviour
     public float glideMovementMultiplier = 1.5f;
 
     private CharacterController controller;
-    private Camera playerCamera;
+    private GameObject playerCamera;
     private float verticalRotation = 0f;
     private Vector3 velocity;
     private bool isGrounded;
@@ -42,11 +44,17 @@ public class PlayerController : MonoBehaviour
     private bool isInWater;
     private bool isDashing;
     private float timeSinceDashPressed = 5;
-    
+
+    //moving platform code
+    private Transform currentPlatform = null;
+    private Vector3 platformLastPosition;
+    private Quaternion platformLastRotation;
+
     private void Start()
     {
         controller = GetComponent<CharacterController>();
-        playerCamera = GetComponentInChildren<Camera>();
+        //playerCamera = GetComponentInChildren<Camera>();
+        playerCamera = transform.GetChild(0).gameObject;
         Cursor.lockState = CursorLockMode.Locked;
     }
 
@@ -59,30 +67,99 @@ public class PlayerController : MonoBehaviour
         HandleRotation();
         HandleCrouch();
         HandleUpgrades();
+        HandleClimbing();
         HandleInteractions();
     }
 
+    bool isSlipping = false;
     private void HandleMovement()
     {
-        float x = Input.GetAxisRaw("Horizontal");
-        float z = Input.GetAxisRaw("Vertical");
-
-        Vector3 move = (transform.right * x + transform.forward * z).normalized;
-
-        float speed = isCrouching ? crouchSpeed : (Input.GetKey(KeyCode.LeftShift) ? sprintSpeed : walkSpeed);
-
-        if (isGliding)
+        if(!isSlipping)
         {
-            speed *= glideMovementMultiplier;
+            float x = Input.GetAxisRaw("Horizontal");
+            float z = Input.GetAxisRaw("Vertical");
+
+            Vector3 moveDirection = (transform.right * x + transform.forward * z).normalized;
+            float targetSpeed = isCrouching ? crouchSpeed : (Input.GetKey(KeyCode.LeftShift) ? maxSprintSpeed : maxWalkSpeed);
+
+            // Smooth acceleration
+            Vector3 targetVelocity = moveDirection * targetSpeed + new Vector3(0, velocity.y, 0);
+            velocity = Vector3.MoveTowards(new Vector3(velocity.x, velocity.y, velocity.z), targetVelocity, acceleration * Time.deltaTime);
         }
 
-        if (isGrounded && velocity.y < 0)
+        if (isGrounded)
         {
-            velocity.y = -2f;
+            // Check for steep slopes and platforms
+            RaycastHit hit;
+            float sphereCastRadius = controller.radius;
+            float sphereCastDistance = controller.height / 2 + 0.2f; // Adding a small buffer
+            if (Physics.SphereCast(transform.position, sphereCastRadius, Vector3.down, out hit, sphereCastDistance))
+            {
+                float slopeAngle = Vector3.Angle(hit.normal, Vector3.up);
+                Debug.Log(slopeAngle);
+                if (slopeAngle > maxSlopeAngle)
+                {
+                    // Slide down the slope
+                    if(!isSlipping)
+                    {
+                        velocity = new Vector3(0, velocity.y, 0);
+                    }
+                    isSlipping = true;
+                    velocity += Vector3.ProjectOnPlane(Physics.gravity, hit.normal) * Time.deltaTime;
+                }
+                else
+                {
+                    isSlipping = false;
+                }
+
+                // Check if we're standing on a moving platform
+                if (hit.collider.CompareTag("MovingPlatform"))
+                {
+                    if (currentPlatform != hit.collider.transform)
+                    {
+                        currentPlatform = hit.collider.transform;
+                        platformLastPosition = currentPlatform.position;
+                        platformLastRotation = currentPlatform.rotation;
+                    }
+                }
+                else
+                {
+                    currentPlatform = null;
+                }
+            }
+            if(!isSlipping)
+            {
+                velocity.y = gravity; // Apply gravity when grounded
+            }
         }
-        
-        velocity.y += (((isGrounded && !isInWater) ? -1000 : 0) + gravity) * Time.deltaTime;
-        controller.Move(move * (speed * Time.deltaTime) + velocity * Time.deltaTime);
+        else
+        {
+            currentPlatform = null;
+            isSlipping = false;
+            velocity.y += gravity * Time.deltaTime;
+        }
+
+        // Calculate movement
+        Vector3 movement = velocity * Time.deltaTime;
+
+        // Adjust for platform movement
+        if (currentPlatform != null)
+        {
+            Vector3 platformDeltaPosition = currentPlatform.position - platformLastPosition;
+            Quaternion platformDeltaRotation = currentPlatform.rotation * Quaternion.Inverse(platformLastRotation);
+
+            // Move player with platform's position change
+            movement += platformDeltaPosition;
+
+            // Rotate player with platform's rotation change
+            transform.rotation = platformDeltaRotation * transform.rotation;
+
+            platformLastPosition = currentPlatform.position;
+            platformLastRotation = currentPlatform.rotation;
+        }
+
+        // Move the player
+        controller.Move(movement);
     }
 
     private void HandleRotation()
@@ -99,17 +176,28 @@ public class PlayerController : MonoBehaviour
 
     private void HandleJump()
     {
-        // Jump Upgrade
         timeSinceLeftCrouch += Time.deltaTime;
-        if (jumpUpgrade && Input.GetButtonDown("Jump") && (isCrouching || timeSinceLeftCrouch < 1) && isGrounded)
+        if (Input.GetButtonDown("Jump") && isGrounded)
         {
-            velocity.y = Mathf.Sqrt(superJumpForce * -2f * gravity);
-            isGrounded = false;
-        }
-        else if (Input.GetButtonDown("Jump") && isGrounded)
-        {
-            velocity.y = Mathf.Sqrt(jumpForce * -2f * gravity);
-            isGrounded = false;
+            // Check for steep slopes before allowing jump
+            RaycastHit hit;
+            if (Physics.Raycast(transform.position, Vector3.down, out hit, controller.height / 2 + 0.2f))
+            {
+                float slopeAngle = Vector3.Angle(hit.normal, Vector3.up);
+                if (slopeAngle < maxSlopeAngle)
+                {
+                    if (jumpUpgrade && (isCrouching || timeSinceLeftCrouch < 1))
+                    {
+                        velocity.y = Mathf.Sqrt(superJumpForce * -2f * gravity);
+                        isGrounded = false;
+                    }
+                    else
+                    {
+                        velocity.y = Mathf.Sqrt(jumpForce * -2f * gravity);
+                        isGrounded = false;
+                    }
+                }
+            }
         }
     }
 
@@ -209,6 +297,31 @@ public class PlayerController : MonoBehaviour
         if (coldResist)
         {
             Physics.IgnoreLayerCollision(gameObject.layer, LayerMask.NameToLayer("ColdZone"), true);
+        }
+    }
+
+    private bool isOnClimbable;
+    private void HandleClimbing()
+    {       
+        // Check if player is on a climbable
+        float capsuleSphereCenterHeight = controller.height * 0.5f - controller.radius;
+        isOnClimbable = Physics.CheckCapsule(transform.position + Vector3.up * capsuleSphereCenterHeight, transform.position - Vector3.up * capsuleSphereCenterHeight, controller.radius, LayerMask.GetMask("Climbable"));
+
+        if (isOnClimbable)
+        {
+            // Swimming logic
+            if (Input.GetKey(KeyCode.Space) || Input.GetAxisRaw("Vertical") > 0.1f)
+            {
+                velocity.y = swimSinkSpeed; // Move up
+            }
+            else if (Input.GetKey(KeyCode.LeftControl))
+            {
+                velocity.y = 0; // Move down
+            }
+            else
+            {
+                velocity.y = -swimSinkSpeed * 0.5f; // Move down slow
+            }
         }
     }
 
