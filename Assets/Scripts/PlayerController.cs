@@ -67,6 +67,7 @@ public class PlayerController : MonoBehaviour
         HandleRotation();
         HandleCrouch();
         HandleUpgrades();
+        HandleClimbing();
         HandleInteractions();
     }
 
@@ -296,6 +297,31 @@ public class PlayerController : MonoBehaviour
         if (coldResist)
         {
             Physics.IgnoreLayerCollision(gameObject.layer, LayerMask.NameToLayer("ColdZone"), true);
+        }
+    }
+
+    private bool isOnClimbable;
+    private void HandleClimbing()
+    {       
+        // Check if player is on a climbable
+        float capsuleSphereCenterHeight = controller.height * 0.5f - controller.radius;
+        isOnClimbable = Physics.CheckCapsule(transform.position + Vector3.up * capsuleSphereCenterHeight, transform.position - Vector3.up * capsuleSphereCenterHeight, controller.radius, LayerMask.GetMask("Climbable"));
+
+        if (isOnClimbable)
+        {
+            // Swimming logic
+            if (Input.GetKey(KeyCode.Space) || Input.GetAxisRaw("Vertical") > 0.1f)
+            {
+                velocity.y = swimSinkSpeed; // Move up
+            }
+            else if (Input.GetKey(KeyCode.LeftControl))
+            {
+                velocity.y = 0; // Move down
+            }
+            else
+            {
+                velocity.y = -swimSinkSpeed * 0.5f; // Move down slow
+            }
         }
     }
 
