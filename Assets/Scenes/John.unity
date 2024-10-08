@@ -1230,11 +1230,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f873797043d7d254a902900cedd83236, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  walkSpeed: 5
-  sprintSpeed: 8
+  maxWalkSpeed: 5
+  maxSprintSpeed: 8
+  acceleration: 25
   jumpForce: 1
   crouchSpeed: 2.5
   gravity: -9.81
+  maxSlopeAngle: 60
   mouseSensitivity: 2
   maxLookAngle: 90
   jumpUpgrade: 0
@@ -1265,7 +1267,7 @@ CharacterController:
   serializedVersion: 2
   m_Height: 2
   m_Radius: 0.5
-  m_SlopeLimit: 45
+  m_SlopeLimit: 60
   m_StepOffset: 0.3
   m_SkinWidth: 0.08
   m_MinMoveDistance: 0.001
