@@ -3466,14 +3466,14 @@ MonoBehaviour:
   Motor: {fileID: 7231325700141366681}
   config:
     BaseSpeed: 4
-    MovementSharpness: 15
+    MovementSharpness: 10
     BaseAirSpeed: 4
-    AirAccel: 15
+    AirAccel: 10
     AirDrag: 0.1
     SprintMultiplier: 2
     CrouchMultiplier: 0.5
     AllowJumpingWhenSliding: 0
-    JumpUpSpeed: 10
+    JumpUpSpeed: 7
     JumpPreGroundingGraceTime: 0
     JumpPostGroundingGraceTime: 0
     SuperJumpMultiplier: 3
@@ -3487,7 +3487,7 @@ MonoBehaviour:
     WaterTerminalVelocity: 3
     Buoyancy: 25
     IgnoredColliders: []
-    DefaultGravityStrength: 9.8
+    DefaultGravityStrength: 20
     CrouchedCapsuleHeight: 1
     BaseTerminalVelocity: 50
     DashLength: 0.1

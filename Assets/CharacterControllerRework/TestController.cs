@@ -428,7 +428,7 @@ public class TestController : MonoBehaviour, ICharacterController
                         // Add move input
                         if (_moveInputVector.sqrMagnitude > 0f)
                         {
-                            Vector3 addedVelocity = _baseAirSpeed * deltaTime * _moveInputVector;
+                            Vector3 addedVelocity = _baseAirSpeed * deltaTime * _moveInputVector * _airAccel;
 
                             Vector3 currentVelocityOnInputsPlane = Vector3.ProjectOnPlane(currentVelocity, Motor.CharacterUp);
 
