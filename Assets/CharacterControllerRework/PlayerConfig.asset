@@ -1,0 +1,46 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 80f9570c4d80d6145b62442963a48f79, type: 3}
+  m_Name: PlayerConfig
+  m_EditorClassIdentifier: 
+  BaseSpeed: 4
+  MovementSharpness: 15
+  BaseAirSpeed: 4
+  AirAccel: 10
+  AirDrag: 0.1
+  SprintMultiplier: 2
+  CrouchMultiplier: 0.5
+  AllowJumpingWhenSliding: 0
+  JumpUpSpeed: 10
+  JumpPreGroundingGraceTime: 0
+  JumpPostGroundingGraceTime: 0
+  SuperJumpMultiplier: 3
+  WaterSwimUpAccel: 10
+  WaterBaseSpeed: 3
+  WaterMovementSharpness: 4
+  WaterBaseAirSpeed: 3
+  WaterAirAccel: 7.5
+  WaterAirDrag: 0.8
+  WaterJumpUpSpeed: 3
+  WaterTerminalVelocity: 3
+  Buoyancy: 25
+  IgnoredColliders: []
+  DefaultGravityStrength: 30
+  CrouchedCapsuleHeight: 50
+  BaseTerminalVelocity: 50
+  DashLength: 0.1
+  DashCooldownLength: 2
+  DashSpeed: 20
+  GlideTerminalVelocity: 2
+  CinemachineBaseHeight: 1.375
+  RotationSpeed: 1
+  CrouchLerpSpeed: 4

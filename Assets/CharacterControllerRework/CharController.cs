@@ -4,104 +4,17 @@ using UnityEngine;
 using KinematicCharacterController;
 using UnityEngine.InputSystem;
 using System;
+using Unity.VisualScripting;
 
 
 
-public class TestController : MonoBehaviour, ICharacterController
+public class CharController: MonoBehaviour, ICharacterController
 {
     public KinematicCharacterMotor Motor;
     //[Space(10)]
     //[Header("Character Default Settings")]
     //[Header("Walking Grounded Movement")]
-    [Serializable]
-    public struct PlayerConfig
-    {
-        [Header("Walking Grounded Movement")]
-        public float BaseSpeed;
-        public float MovementSharpness;
-        [Header("Walking Air Movement")]
-        public float BaseAirSpeed;
-        public float AirAccel;
-        public float AirDrag;
-        [Header("Sprinting Movement")]
-        public float SprintMultiplier;
-        [Header("Crouching Movement")]
-        public float CrouchMultiplier;
-
-        [Header("Jumping")]
-        public bool AllowJumpingWhenSliding;
-        public float JumpUpSpeed;
-        public float JumpPreGroundingGraceTime;
-        public float JumpPostGroundingGraceTime;
-        public float SuperJumpMultiplier;
-        [Header("Underwater")]
-        public float WaterSwimUpAccel;
-        public float WaterBaseSpeed;
-        public float WaterMovementSharpness;
-        public float WaterBaseAirSpeed;
-        public float WaterAirAccel;
-        public float WaterAirDrag;
-        public float WaterJumpUpSpeed;
-        public float WaterTerminalVelocity;
-        public float Buoyancy;
-        [Header("Misc")]
-        public List<Collider> IgnoredColliders;
-        public float DefaultGravityStrength;
-        public float CrouchedCapsuleHeight;
-        public float BaseTerminalVelocity;
-
-        [Header("Dash")]
-        public float DashLength;
-        public float DashCooldownLength;
-        public float DashSpeed;
-        [Header("Glide")]
-        public float GlideUpAccel;
-        [Header("Hazard")]
-        public float HazardRespawnTime;
-        [Header("Cinemachine")]
-        [Tooltip("The follow target set in the Cinemachine Virtual Camera that the camera will follow")]
-        public GameObject CinemachineCameraTarget;
-        public float CinemachineBaseHeight;
-        public float RotationSpeed;
-        public float CrouchLerpSpeed;
-    }
-    [SerializeField] //Defaults, values can be changed in editor
-    private PlayerConfig config = new()
-    {
-        BaseSpeed = 4f,
-        MovementSharpness = 15f,
-        BaseAirSpeed = 4f,
-        AirAccel = 15f,
-        AirDrag = 0.1f,
-        SprintMultiplier = 2f,
-        CrouchMultiplier = 0.5f,
-        AllowJumpingWhenSliding = false,
-        JumpUpSpeed = 10f,
-        JumpPreGroundingGraceTime = 0f,
-        JumpPostGroundingGraceTime = 0f,
-        SuperJumpMultiplier = 3f,
-        WaterSwimUpAccel = 10f,
-        WaterBaseSpeed = 3f,
-        WaterMovementSharpness = 4f,
-        WaterBaseAirSpeed = 3f,
-        WaterAirAccel = 7.5f,
-        WaterAirDrag = 0.8f,
-        WaterJumpUpSpeed = 3f,
-        WaterTerminalVelocity = 3f,
-        Buoyancy = 25f,
-        IgnoredColliders = new List<Collider>(),
-        DefaultGravityStrength = 30,
-        CrouchedCapsuleHeight = 1f,
-        BaseTerminalVelocity = 50f,
-        DashLength = 0.1f,
-        DashCooldownLength = 2f,
-        DashSpeed = 20f,
-        GlideUpAccel = 0.5f,
-        HazardRespawnTime = 3f,
-        CinemachineBaseHeight = 1.375f,
-        RotationSpeed = 1.0f,
-        CrouchLerpSpeed = 4f
-    };
+    public ConfigAssetType config;
     [Serializable]
     public struct Upgrades
     {
@@ -114,6 +27,7 @@ public class TestController : MonoBehaviour, ICharacterController
         public bool Cut;
         public bool Smash;
     }
+
     public Upgrades PlayerUpgrades = new Upgrades 
     { 
         Jump = false, 
@@ -127,31 +41,42 @@ public class TestController : MonoBehaviour, ICharacterController
     };
     // cinemachine
     private float _cinemachineTargetPitch=0;
-    
+    public GameObject CinemachineCameraTarget;
 
     [Header("Player State")]
     public Quaternion _tgtYaw;
-    public bool _isSprinting = false;
-    public bool _isUnderwater;
-    public float _baseSpeed;
-    public float _finalSpeed;
-    public float _movementSharpness;
-    public float _baseAirSpeed;
-    public float _finalAirSpeed;
-    public float _airAccel;
-    public float _drag;
-    public float _jumpUpSpeed;
-    public Vector3 _gravity;
-    public float _terminalVelocity;
-    public float _holdJumpAccel = 0; //upwards acceleration while holding jump button- used for glide and swimming
-    public bool _isCrouching = false;
-    public bool _jumpConsumed = false;
+    public bool Sprinting = false;
+    public bool InWater;
+    public bool Submerged;
+    public float BaseSpeed;
+    public float MoveSharpness;
+    public float BaseAirSpeed;
+    public float AirAccel;
+    public float AirDrag;
+    public float JumpUpSpeed;
+    public float JumpUpMul;
+    public Vector3 Gravity;
+    public float Buoyancy;
+    public float TerminalVelocity;
+    public float HoldJumpAccel = 0; //upwards acceleration while holding jump button- used for swimming
+    public bool Crouching = false;
+    public bool HotZone = false;
+    public bool ColdZone = false;
+    public Vector3 RespawnPos;
+
+    private int WaterTriggerCount = 0;
+    private int HotTriggerCount = 0;
+    private int ColdTriggerCount = 0;
+
     public enum MovementState
     {
         Normal,
         Dash,
     }
     public MovementState _movementState;
+    private float _finalSpeed;
+    private float _finalAirSpeed;
+    private bool _jumpConsumed = false;
 
     private PlayerInput _playerInput;
     private InputHandler _input;
@@ -174,7 +99,7 @@ public class TestController : MonoBehaviour, ICharacterController
     private Vector3 lastInnerNormal = Vector3.zero;
     private Vector3 lastOuterNormal = Vector3.zero;
     private float _rotationVelocity;
-    
+    private bool _jumpReleased=false;
     private bool IsCurrentDeviceMouse
     {
         get
@@ -184,6 +109,7 @@ public class TestController : MonoBehaviour, ICharacterController
         }
     }
     private float _crouchLerpTime=0;
+   
     private void Awake()
     {
         _tgtYaw = this.transform.rotation;
@@ -198,15 +124,16 @@ public class TestController : MonoBehaviour, ICharacterController
         {
             _mainCamera = GameObject.FindGameObjectWithTag("MainCamera");
         }
-        _baseSpeed = config.BaseSpeed;
-        _finalSpeed = _baseSpeed;
-        _movementSharpness = config.MovementSharpness;
-        _baseAirSpeed = config.BaseAirSpeed;
-        _airAccel = config.AirAccel;
-        _drag = config.AirDrag;
-        _jumpUpSpeed = config.JumpUpSpeed;
-        _gravity = Vector3.down * config.DefaultGravityStrength;
-        _terminalVelocity = config.BaseTerminalVelocity;
+        BaseSpeed = config.BaseSpeed;
+        _finalSpeed = BaseSpeed;
+        MoveSharpness = config.MovementSharpness;
+        BaseAirSpeed = config.BaseAirSpeed;
+        AirAccel = config.AirAccel;
+        AirDrag = config.AirDrag;
+        JumpUpSpeed = config.JumpUpSpeed;
+        Gravity = Vector3.down * config.DefaultGravityStrength;
+        TerminalVelocity = config.BaseTerminalVelocity;
+        
     }
     private void Start()
     {
@@ -262,6 +189,26 @@ public class TestController : MonoBehaviour, ICharacterController
     /// </summary>
     private void Update()
     {
+        InWater = WaterTriggerCount > 0;
+        ColdZone = ColdTriggerCount > 0;
+        HotZone = HotTriggerCount > 0;
+
+        Submerged = false;
+        foreach (Collider col in Physics.OverlapSphere(CinemachineCameraTarget.transform.position, 0.1f))
+        {
+            if (col.CompareTag("Water")) { Submerged = true; }
+        }
+        if (Motor.GroundingStatus.IsStableOnGround && !Motor.GroundingStatus.GroundCollider.CompareTag("Moving"))
+        {
+            if ((!Submerged || PlayerUpgrades.Swim) && (!HotZone || PlayerUpgrades.Heat) && (!ColdZone || PlayerUpgrades.Cold))
+            {
+                RespawnPos = transform.position;
+            }
+        }
+        if ((Submerged && !PlayerUpgrades.Swim) || (HotZone && !PlayerUpgrades.Heat) || (ColdZone && !PlayerUpgrades.Cold))
+        {
+            Teleport(RespawnPos);
+        }
         // Clamp input
         Vector3 inputVector = Vector3.ClampMagnitude(new Vector3(_input.move.x,0,_input.move.y),1f);
 
@@ -271,6 +218,7 @@ public class TestController : MonoBehaviour, ICharacterController
         // Move and look inputs
         _moveInputVector = cameraPlanarRotation * inputVector;
         //Character state updates
+        if (PlayerUpgrades.Glide && !_jumpReleased && !_input.jump) { _jumpReleased = true; }
         switch (_movementState)
         {
             case MovementState.Normal:
@@ -295,16 +243,26 @@ public class TestController : MonoBehaviour, ICharacterController
                             _dashReady = true;  
                         }
                     }
+                    if ( !InWater && PlayerUpgrades.Glide )
+                    {
+                        if (_input.jump && _jumpReleased)
+                        {
+                            TerminalVelocity = config.GlideTerminalVelocity;
+                        } else
+                        {
+                            TerminalVelocity = config.BaseTerminalVelocity;
+                        }
+                    }
                     
                     _shouldBeCrouching = _input.crouch;
                     bool stable = Motor.GroundingStatus.IsStableOnGround;
 
-                    if (!_isCrouching && _shouldBeCrouching)
+                    if (!Crouching && _shouldBeCrouching)
                     {
-                        _isCrouching = true;
+                        Crouching = true;
                         if (stable)
                         {
-                            _isSprinting = false;
+                            Sprinting = false;
                         }
                         Motor.SetCapsuleDimensions(0.5f, config.CrouchedCapsuleHeight, config.CrouchedCapsuleHeight * 0.5f);
                     }
@@ -312,28 +270,29 @@ public class TestController : MonoBehaviour, ICharacterController
                     {
                         if (stable)
                         {
-                            _isSprinting = !_isCrouching;
+                            Sprinting = !Crouching;
                             //_isSprinting = true;
                         }
                     }
                     else
                     {
-                        _isSprinting = false;
+                        Sprinting = false;
                     }
 
-                    if (_isSprinting)
+                    if (Sprinting)
                     {
-                        _finalSpeed = _baseSpeed * config.SprintMultiplier;
+                        _finalSpeed = BaseSpeed * config.SprintMultiplier;
                     }
-                    else if (_isCrouching)
+                    else if (Crouching)
                     {
-                        _finalSpeed = _baseSpeed * config.CrouchMultiplier;
+                        _finalSpeed = BaseSpeed * config.CrouchMultiplier;
                     }
                     else
                     {
-                        _finalSpeed = _baseSpeed;
+                        _finalSpeed = BaseSpeed;
                     }
                     _finalAirSpeed = _finalSpeed;
+                    JumpUpMul = (PlayerUpgrades.Jump && Crouching) ? config.SuperJumpMultiplier : 1f;
                     break;
                 }
             case MovementState.Dash:
@@ -346,6 +305,7 @@ public class TestController : MonoBehaviour, ICharacterController
                     break;
                 }
         }
+        //if ()
     }
 
 
@@ -420,7 +380,7 @@ public class TestController : MonoBehaviour, ICharacterController
                         Vector3 targetMovementVelocity = reorientedInput * _finalSpeed;
 
                         // Smooth movement Velocity
-                        currentVelocity = Vector3.Lerp(currentVelocity, targetMovementVelocity, 1f - Mathf.Exp(-_movementSharpness * deltaTime));
+                        currentVelocity = Vector3.Lerp(currentVelocity, targetMovementVelocity, 1f - Mathf.Exp(-MoveSharpness * deltaTime));
                     }
                     // Air movement
                     else
@@ -428,15 +388,15 @@ public class TestController : MonoBehaviour, ICharacterController
                         // Add move input
                         if (_moveInputVector.sqrMagnitude > 0f)
                         {
-                            Vector3 addedVelocity = _baseAirSpeed * deltaTime * _moveInputVector;
+                            Vector3 addedVelocity = BaseAirSpeed * deltaTime * _moveInputVector * AirAccel;
 
                             Vector3 currentVelocityOnInputsPlane = Vector3.ProjectOnPlane(currentVelocity, Motor.CharacterUp);
 
                             // Limit air velocity from inputs
-                            if (currentVelocityOnInputsPlane.magnitude < _baseAirSpeed)
+                            if (currentVelocityOnInputsPlane.magnitude < BaseAirSpeed)
                             {
                                 // clamp addedVel to make total vel not exceed max vel on inputs plane
-                                Vector3 newTotal = Vector3.ClampMagnitude(currentVelocityOnInputsPlane + addedVelocity, _baseAirSpeed);
+                                Vector3 newTotal = Vector3.ClampMagnitude(currentVelocityOnInputsPlane + addedVelocity, BaseAirSpeed);
                                 addedVelocity = newTotal - currentVelocityOnInputsPlane;
                             }
                             else
@@ -463,10 +423,20 @@ public class TestController : MonoBehaviour, ICharacterController
                         }
 
                         // Gravity ONLY POINTS DOWN IN CURRENT IMPLEMENTATION, but if you want tell me and I'll change this
-                        currentVelocity += (_gravity + new Vector3(0, _input.jump ? _holdJumpAccel : 0, 0)) * deltaTime;
-                        currentVelocity.y = (currentVelocity.y < -_terminalVelocity) ? -_terminalVelocity : currentVelocity.y;
+                        
+                        if (currentVelocity.y>-TerminalVelocity)
+                        {
+                            Vector3 _ = new Vector3(0, Buoyancy + (_input.jump ? HoldJumpAccel : 0), 0);
+                            currentVelocity += (Gravity + _) * deltaTime;
+                        } 
+                        else
+                        {
+                            currentVelocity.y = Mathf.Lerp(currentVelocity.y, -TerminalVelocity, 0.5f);
+                        }
+
+                        //currentVelocity.y = (currentVelocity.y < -_terminalVelocity) ? -_terminalVelocity : currentVelocity.y;
                         // Drag
-                        currentVelocity *= (1f / (1f + (_drag * deltaTime)));
+                        currentVelocity *= (1f / (1f + (AirDrag * deltaTime)));
                     }
 
                     // Handle jumping
@@ -489,10 +459,11 @@ public class TestController : MonoBehaviour, ICharacterController
                             Motor.ForceUnground();
 
                             // Add to the return velocity and reset jump state
-                            currentVelocity += (jumpDirection * _jumpUpSpeed) - Vector3.Project(currentVelocity, Motor.CharacterUp);
+                            currentVelocity += (JumpUpMul * JumpUpSpeed * jumpDirection) - Vector3.Project(currentVelocity, Motor.CharacterUp);
                             _jumpRequested = false;
                             _jumpConsumed = true;
                             _jumpedThisFrame = true;
+                            _jumpReleased = false;
                         }
                     }
                     // Take into account additive velocity
@@ -548,7 +519,7 @@ public class TestController : MonoBehaviour, ICharacterController
                     }
 
                     // Handle uncrouching
-                    if (_isCrouching && !_shouldBeCrouching)
+                    if (Crouching && !_shouldBeCrouching)
                     {
                         // Do an overlap test with the character's standing height to see if there are any obstructions
                         Motor.SetCapsuleDimensions(0.5f, 2f, 1f);
@@ -565,7 +536,7 @@ public class TestController : MonoBehaviour, ICharacterController
                         else
                         {
                             // If no obstructions, uncrouch
-                            _isCrouching = false;
+                            Crouching = false;
                         }
                     }
 
@@ -610,17 +581,17 @@ public class TestController : MonoBehaviour, ICharacterController
     {
     }
 
-    public void AddVelocity(Vector3 velocity)
-    {
-        switch (_movementState)
-        {
-            case MovementState.Normal:
-                {
-                    _internalVelocityAdd += velocity;
-                    break;
-                }
-        }
-    }
+    //public void AddVelocity(Vector3 velocity)
+    //{
+    //    switch (_movementState)
+    //    {
+    //        case MovementState.Normal:
+    //            {
+    //                _internalVelocityAdd += velocity;
+    //                break;
+    //            }
+    //    }
+    //}
 
     public void ProcessHitStabilityReport(Collider hitCollider, Vector3 hitNormal, Vector3 hitPoint, Vector3 atCharacterPosition, Quaternion atCharacterRotation, ref HitStabilityReport hitStabilityReport)
     {
@@ -651,20 +622,20 @@ public class TestController : MonoBehaviour, ICharacterController
             _cinemachineTargetPitch = ClampAngle(_cinemachineTargetPitch, -90f, 90f);
 
             // Update Cinemachine camera target pitch
-            config.CinemachineCameraTarget.transform.localEulerAngles = new Vector3(_cinemachineTargetPitch, 0f, 0f);
+            CinemachineCameraTarget.transform.localEulerAngles = new Vector3(_cinemachineTargetPitch, 0f, 0f);
 
             // rotate the player left and right
             _tgtYaw *= Quaternion.Euler(0f, _rotationVelocity, 0f);
             //CinemachineCameraTarget.transform.Rotate(new Vector3(0, _rotationVelocity,0));
         }
-        if (_isCrouching && _crouchLerpTime<1)
+        if (Crouching && _crouchLerpTime<1)
         {
             _crouchLerpTime = Mathf.Min(_crouchLerpTime + Time.deltaTime* config.CrouchLerpSpeed, 1);
-            config.CinemachineCameraTarget.transform.localPosition = new Vector3(0, Mathf.SmoothStep(config.CinemachineBaseHeight, config.CinemachineBaseHeight / 2, _crouchLerpTime), 0);
-        } else if (!_isCrouching && _crouchLerpTime>0)
+            CinemachineCameraTarget.transform.localPosition = new Vector3(0, Mathf.SmoothStep(config.CinemachineBaseHeight, config.CinemachineBaseHeight / 2, _crouchLerpTime), 0);
+        } else if (!Crouching && _crouchLerpTime>0)
         {
             _crouchLerpTime = Mathf.Max(_crouchLerpTime - Time.deltaTime* config.CrouchLerpSpeed, 0);
-            config.CinemachineCameraTarget.transform.localPosition = new Vector3(0, Mathf.SmoothStep(config.CinemachineBaseHeight, config.CinemachineBaseHeight / 2, _crouchLerpTime), 0);
+            CinemachineCameraTarget.transform.localPosition = new Vector3(0, Mathf.SmoothStep(config.CinemachineBaseHeight, config.CinemachineBaseHeight / 2, _crouchLerpTime), 0);
         }
         
     }
@@ -676,37 +647,68 @@ public class TestController : MonoBehaviour, ICharacterController
         return Mathf.Clamp(lfAngle, lfMin, lfMax);
         
     }
-    public Collider tempwatercollider;
+
     private void OnTriggerEnter(Collider other)
     {
-        if (other==tempwatercollider)
+        switch (other.tag)
         {
-            _isUnderwater = true;
-            _holdJumpAccel = config.WaterSwimUpAccel;
-            _baseSpeed = config.WaterBaseSpeed;
-            _baseAirSpeed = config.WaterBaseAirSpeed;
-            _drag = config.WaterAirDrag;
-            _movementSharpness = config.WaterMovementSharpness;
-            _jumpUpSpeed = config.WaterJumpUpSpeed;
-            _gravity = Vector3.down * (config.DefaultGravityStrength - config.Buoyancy);
-            _terminalVelocity = config.WaterTerminalVelocity;
+            case ("Water"):
+                WaterTriggerCount++;
+                if (WaterTriggerCount==1) 
+                {
+                    HoldJumpAccel = config.WaterSwimUpAccel;
+                    BaseSpeed = config.WaterBaseSpeed;
+                    BaseAirSpeed = config.WaterBaseAirSpeed;
+                    AirDrag = config.WaterAirDrag;
+                    MoveSharpness = config.WaterMovementSharpness;
+                    JumpUpSpeed = config.WaterJumpUpSpeed;
+                    Buoyancy = config.Buoyancy;
+                    TerminalVelocity = config.WaterTerminalVelocity;
+                }
+                break;
+            case ("HotZone"):
+                HotTriggerCount++;
+                break;
+            case ("ColdZone"):
+                ColdTriggerCount++;
+                break;
+            default:
+                break;
         }
     }
     private void OnTriggerExit(Collider other)
     {
-        
-        if (other == tempwatercollider)
+        switch (other.tag)
         {
-            _isUnderwater = false;
-            _holdJumpAccel = 0;
-            _baseSpeed = config.BaseSpeed;
-            _baseAirSpeed = config.BaseAirSpeed;
-            _drag = config.AirDrag;
-            _movementSharpness = config.MovementSharpness;
-            _jumpUpSpeed = config.JumpUpSpeed;
-            _gravity = Vector3.down * config.DefaultGravityStrength;
-            _terminalVelocity = config.BaseTerminalVelocity;
+            case ("Water"):
+                WaterTriggerCount--;
+                if (WaterTriggerCount==0)
+                {
+                    HoldJumpAccel = 0;
+                    BaseSpeed = config.BaseSpeed;
+                    BaseAirSpeed = config.BaseAirSpeed;
+                    AirDrag = config.AirDrag;
+                    MoveSharpness = config.MovementSharpness;
+                    JumpUpSpeed = config.JumpUpSpeed;
+                    Buoyancy = 0;
+                    TerminalVelocity = config.BaseTerminalVelocity;
+                }
+                break;
+            case ("HotZone"):
+                HotTriggerCount--;
+                break;
+            case ("ColdZone"):
+                ColdTriggerCount--;
+                break;
+            default:
+                break;
         }
+    }
+    public void Teleport(Vector3 pos)
+    {
+        Motor.BaseVelocity = Vector3.zero;
+        Motor.SetPosition(pos);
+        SetMovementState(MovementState.Normal);
     }
 }
  
