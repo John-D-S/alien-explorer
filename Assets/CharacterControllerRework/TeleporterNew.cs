@@ -2,23 +2,26 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class TeleporterNew : MonoBehaviour
+namespace CharacterSystem
 {
-    public Vector3 teleportDestination;
-
-    private void OnTriggerEnter(Collider other)
+    public class TeleporterNew : MonoBehaviour
     {
-        if (other.CompareTag("Player"))
+        public Vector3 teleportDestination;
+
+        private void OnTriggerEnter(Collider other)
         {
-            other.gameObject.GetComponent<CharController>().Teleport(teleportDestination);
+            if (other.CompareTag("Player"))
+            {
+                other.gameObject.GetComponent<PlayerController>().Teleport(teleportDestination);
 
+            }
         }
-    }
 
-    private void OnDrawGizmos()
-    {
-        Gizmos.color = new Color(1, 0, 0, 0.5f);
-        Gizmos.DrawSphere(teleportDestination, 1);
-        Gizmos.DrawLine(transform.position, teleportDestination);
+        private void OnDrawGizmos()
+        {
+            Gizmos.color = new Color(1, 0, 0, 0.5f);
+            Gizmos.DrawSphere(teleportDestination, 1);
+            Gizmos.DrawLine(transform.position, teleportDestination);
+        }
     }
 }

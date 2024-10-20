@@ -580,6 +580,7 @@ namespace KinematicCharacterController
             if (!Mathf.Approximately(transform.lossyScale.x, 1f) || !Mathf.Approximately(transform.lossyScale.y, 1f) || !Mathf.Approximately(transform.lossyScale.z, 1f))
             {
                 Debug.LogError("Character's lossy scale is not (1,1,1). This is not allowed. Make sure the character's transform and all of its parents have a (1,1,1) scale.", this.gameObject);
+                Debug.Log(transform.lossyScale);
             }
 #endif
         }
