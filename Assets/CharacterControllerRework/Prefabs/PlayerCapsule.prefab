@@ -92,7 +92,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5184751880880205172}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -116,6 +116,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Motor: {fileID: 8889454140811505929}
   config: {fileID: 11400000, guid: 8de3578ebbdd6b346ae937dbf73e25a9, type: 2}
+  CinemachineCameraTarget: {fileID: 650184554464859183}
   MyUpgrades:
     Jump:
       On: 0
@@ -141,8 +142,8 @@ MonoBehaviour:
     Smash:
       On: 0
       Tokens: 0
-  CinemachineCameraTarget: {fileID: 650184554464859183}
-  _tgtYaw: {x: 0, y: 0, z: 0, w: 0}
+  yawRotation: {x: 0, y: 0, z: 0, w: 0}
+  pitchRotation: 0
   Sprinting: 0
   WaterState: 0
   HotState: 0
@@ -163,7 +164,7 @@ MonoBehaviour:
   Crouching: 0
   RespawnPos: {x: 0, y: 0, z: 0}
   RespawnDeltaTime: 0
-  _movementState: 0
+  MovementState: 0
   TempBlackoutUI: {fileID: 0}
 --- !u!114 &8889454140811505928
 MonoBehaviour:
@@ -184,6 +185,7 @@ MonoBehaviour:
   crouch: 0
   dash: 0
   analogMovement: 0
+  interact: 0
   cursorLocked: 1
   cursorInputForLook: 1
 --- !u!114 &5184751880880205176
@@ -373,8 +375,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 57d5ce4917dca3a4b8425797fc389a5d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Player: {fileID: 0}
+  Player: {fileID: 8889454140811505933}
   upgradeButtonPrefab: {fileID: 8768146316336243395, guid: e8d732ccd697bf74c9c958fa70dbb051,
     type: 3}
   upgradeUI: {fileID: 0}
-  requiredTokenNumber: 4
+  requiredTokenNumber: 1

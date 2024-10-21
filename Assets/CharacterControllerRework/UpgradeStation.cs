@@ -1,13 +1,13 @@
 using UnityEngine;
 namespace CharacterSystem
 {
-    public class UpgradeStationNew : MonoBehaviour
+    public class UpgradeStation : MonoBehaviour
     {
-        private UpgradeManagerNew upgradeManager;
+        private UpgradeManager upgradeManager;
 
         private void Start()
         {
-            upgradeManager = FindObjectOfType<UpgradeManagerNew>();
+            upgradeManager = FindObjectOfType<UpgradeManager>();
         }
 
         private void OnTriggerEnter(Collider other)

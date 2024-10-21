@@ -34,16 +34,17 @@ MonoBehaviour:
   WaterJumpUpSpeed: 3
   WaterTerminalVelocity: 3
   Buoyancy: 25
-  ClimbAccel: 30
+  ClimbAccel: 50
   ClimbUpVel: 6
   ClimbDownVel: 3
   ClimbSlowFall: 10
-  ClimbAirDrag: 1
+  ClimbAirDrag: 3
   IgnoredColliders: []
   DefaultGravityStrength: 30
   CrouchedCapsuleHeight: 50
   BaseTerminalVelocity: 50
   RespawnTimerLength: 1
+  InteractRange: 2
   DashLength: 0.1
   DashCooldownLength: 2
   DashSpeed: 20

@@ -6,27 +6,26 @@ using UnityEngine.InputSystem;
 using System;
 using Unity.VisualScripting;
 using UnityEngine.UI;
+using UnityEngine.Assertions.Must;
+using Cinemachine;
 
 
 namespace CharacterSystem
 {
-
-
     public class PlayerController : MonoBehaviour, ICharacterController
     {
+
+        [Header("Assets/objects/components")]
         public KinematicCharacterMotor Motor;
-        //[Space(10)]
-        //[Header("Character Default Settings")]
-        //[Header("Walking Grounded Movement")]
         public ConfigAssetType config;
-
-
-        public Upgrades MyUpgrades = new Upgrades(false, 0);
-        // cinemachine
-        private float _cinemachineTargetPitch = 0;
         public GameObject CinemachineCameraTarget;
+
+        [Header("Upgrades")]
+        public Upgrades MyUpgrades = new Upgrades(false, 0);
+
         [Header("Player State")]
-        public Quaternion _tgtYaw;
+        public Quaternion yawRotation;
+        public float pitchRotation = 0;
         public bool Sprinting = false;
         public byte WaterState = 0;
         public byte HotState = 0;
@@ -49,13 +48,13 @@ namespace CharacterSystem
         public float RespawnDeltaTime = 0f;
 
 
-        public enum MovementState
+        public enum MovementStates
         {
             Normal,
             Dash,
             Climb
         }
-        public MovementState _movementState;
+        public MovementStates MovementState;
 
         private uint _waterTriggerCount = 0;
         private uint _hotTriggerCount = 0;
@@ -68,8 +67,7 @@ namespace CharacterSystem
         private PlayerInput _playerInput;
         private InputHandler _input;
 
-        private Collider[] _probedColliders = new Collider[8];
-        private RaycastHit[] _probedHits = new RaycastHit[8];
+        private readonly Collider[] _probedColliders = new Collider[8];
         private Vector3 _moveInputVector;
         private Vector3 _dashInputVec;
         private bool _jumpRequested = false;
@@ -82,8 +80,6 @@ namespace CharacterSystem
 
         private float _dashTimer = 0f;
         private bool _dashReady = true;
-        private Vector3 lastInnerNormal = Vector3.zero;
-        private Vector3 lastOuterNormal = Vector3.zero;
         private float _rotationVelocity;
         private bool _jumpReleased = false;
         private bool IsCurrentDeviceMouse
@@ -100,9 +96,9 @@ namespace CharacterSystem
 
         private void Awake()
         {
-            _tgtYaw = this.transform.rotation;
+            yawRotation = this.transform.rotation;
             // Handle initial state
-            SetMovementState(MovementState.Normal);
+            SetMovementState(MovementStates.Normal);
 
             // Assign the characterController to the motor
             Motor.CharacterController = this;
@@ -124,20 +120,21 @@ namespace CharacterSystem
             _input = GetComponent<InputHandler>();
             _playerInput = GetComponent<PlayerInput>();
         }
+
         /// <summary>
         /// Handles movement state transitions and enter/exit callbacks
         /// </summary>
-        public void SetMovementState(MovementState newState)
+        public void SetMovementState(MovementStates newState)
         {
 
             //When exiting a movement state
-            switch (_movementState)
+            switch (MovementState)
             {
-                case MovementState.Normal:
+                case MovementStates.Normal:
                     {
                         break;
                     }
-                case MovementState.Dash:
+                case MovementStates.Dash:
                     {
                         _dashTimer = 0;
                         Motor.AllowSteppingWithoutStableGrounding = false;
@@ -145,17 +142,15 @@ namespace CharacterSystem
                     }
             }
 
-            MovementState tmpOldState = _movementState;
-            _movementState = newState;
-
+            
             //When entering a movement state
-            switch (_movementState)
+            switch (newState)
             {
-                case MovementState.Normal:
+                case MovementStates.Normal:
                     {
                         break;
                     }
-                case MovementState.Dash:
+                case MovementStates.Dash:
                     {
                         _dashTimer = 0;
 
@@ -165,6 +160,8 @@ namespace CharacterSystem
                         break;
                     }
             }
+            MovementState = newState;
+
         }
 
 
@@ -182,6 +179,7 @@ namespace CharacterSystem
 
             UpdateZoneState();
 
+            // Respawn handling 
 
             if (Motor.GroundingStatus.IsStableOnGround && !Motor.GroundingStatus.GroundCollider.CompareTag("Moving"))
             {
@@ -209,15 +207,14 @@ namespace CharacterSystem
             Vector3 inputVector = Vector3.ClampMagnitude(new Vector3(_input.move.x, 0, _input.move.y), 1f);
 
             // Calculate camera direction and rotation on the character plane
-            Quaternion cameraPlanarRotation = Quaternion.LookRotation(transform.forward, Motor.CharacterUp);
 
             // Move and look inputs
-            _moveInputVector = cameraPlanarRotation * inputVector;
+            _moveInputVector = yawRotation * inputVector;
             //Character state updates
             if (MyUpgrades.Glide && !_jumpReleased && !_input.jump) { _jumpReleased = true; }
-            switch (_movementState)
+            switch (MovementState)
             {
-                case MovementState.Normal:
+                case MovementStates.Normal:
                     {
                         // Request jump if jump input
                         if (_input.jump)
@@ -229,7 +226,7 @@ namespace CharacterSystem
                         //dash
                         if (MyUpgrades.Dash && _input.dash && _dashReady)
                         {
-                            SetMovementState(MovementState.Dash);
+                            SetMovementState(MovementStates.Dash);
                         }
                         if (!_dashReady)
                         {
@@ -251,12 +248,11 @@ namespace CharacterSystem
                         }
 
                         _shouldBeCrouching = _input.crouch;
-                        bool stable = Motor.GroundingStatus.IsStableOnGround;
 
                         if (!Crouching && _shouldBeCrouching)
                         {
                             Crouching = true;
-                            if (stable)
+                            if (Motor.GroundingStatus.IsStableOnGround)
                             {
                                 Sprinting = false;
                             }
@@ -264,10 +260,9 @@ namespace CharacterSystem
                         }
                         if (_input.sprint)
                         {
-                            if (stable)
+                            if (Motor.GroundingStatus.IsStableOnGround)
                             {
                                 Sprinting = !Crouching;
-                                //_isSprinting = true;
                             }
                         }
                         else
@@ -275,6 +270,7 @@ namespace CharacterSystem
                             Sprinting = false;
                         }
 
+                        //Determine final speed
                         if (Sprinting)
                         {
                             _finalSpeed = BaseSpeed * config.SprintMultiplier;
@@ -291,16 +287,31 @@ namespace CharacterSystem
                         JumpUpMul = (MyUpgrades.Jump && Crouching) ? config.SuperJumpMultiplier : 1f;
                         break;
                     }
-                case MovementState.Dash:
+                case MovementStates.Dash:
                     {
                         _dashTimer += Time.deltaTime;
                         if (_dashTimer > config.DashLength || Motor.BaseVelocity.sqrMagnitude < 0.1)
                         {
-                            SetMovementState(MovementState.Normal);
+                            SetMovementState(MovementStates.Normal);
                         }
                         break;
                     }
             }
+            if (MyUpgrades.Smash || MyUpgrades.Cut)
+            {
+                Ray InteractRay = new Ray(Camera.main.transform.position, Camera.main.transform.forward);
+
+                if (Physics.Raycast(InteractRay, out RaycastHit HitInfo, config.InteractRange, ~(1 << 2)) && HitInfo.collider.gameObject.TryGetComponent(out Breakable breakable))
+                {
+                    if (_input.interact && 
+                        (((breakable.breakableType == Breakable.BreakableType.Cut) && MyUpgrades.Cut) ||
+                         ((breakable.breakableType == Breakable.BreakableType.Smash) && MyUpgrades.Smash)))
+                    {
+                        breakable.Break();
+                    }
+                }
+            }
+            if (_input.interact) { _input.interact = false; }
             //if ()
         }
 
@@ -321,29 +332,16 @@ namespace CharacterSystem
         /// </summary>
         public void UpdateRotation(ref Quaternion currentRotation, float deltaTime)
         {
-            switch (_movementState)
+            switch (MovementState)
             {
-                case MovementState.Normal:
+                case MovementStates.Normal:
                     {
-                        //if (_lookInputVector.sqrMagnitude > 0f && OrientationSharpness > 0f)
-                        //{
-                        // Smoothly interpolate from current to target look direction
-                        //Vector3 smoothedLookInputDirection = Vector3.Slerp(Motor.CharacterForward, _lookInputVector, 1 - Mathf.Exp(-OrientationSharpness * deltaTime)).normalized;
-
-                        // Set the current rotation (which will be used by the KinematicCharacterMotor)
-                        currentRotation = _tgtYaw;
-                        //}
-
-
-
-                        //Vector3 smoothedGravityDir = Vector3.Slerp(currentUp, Vector3.up, 1 - Mathf.Exp(-BonusOrientationSharpness * deltaTime));
-                        //currentRotation = Quaternion.FromToRotation(currentUp, Vector3.up) * currentRotation;
-
+                        currentRotation = yawRotation;
                         break;
                     }
-                case MovementState.Dash:
+                case MovementStates.Dash:
                     {
-                        currentRotation = _tgtYaw;
+                        currentRotation = yawRotation;
                         break;
                     }
             }
@@ -356,9 +354,9 @@ namespace CharacterSystem
         /// </summary>
         public void UpdateVelocity(ref Vector3 currentVelocity, float deltaTime)
         {
-            switch (_movementState)
+            switch (MovementState)
             {
-                case MovementState.Normal:
+                case MovementStates.Normal:
                     {
                         // Ground movement
                         if (Motor.GroundingStatus.IsStableOnGround)
@@ -384,15 +382,15 @@ namespace CharacterSystem
                             // Add move input
                             if (_moveInputVector.sqrMagnitude > 0f)
                             {
-                                Vector3 addedVelocity = BaseAirSpeed * deltaTime * _moveInputVector * AirAccel;
+                                Vector3 addedVelocity = AirAccel * _finalAirSpeed * deltaTime * _moveInputVector;
 
                                 Vector3 currentVelocityOnInputsPlane = Vector3.ProjectOnPlane(currentVelocity, Motor.CharacterUp);
 
                                 // Limit air velocity from inputs
-                                if (currentVelocityOnInputsPlane.magnitude < BaseAirSpeed)
+                                if (currentVelocityOnInputsPlane.magnitude < _finalAirSpeed)
                                 {
                                     // clamp addedVel to make total vel not exceed max vel on inputs plane
-                                    Vector3 newTotal = Vector3.ClampMagnitude(currentVelocityOnInputsPlane + addedVelocity, BaseAirSpeed);
+                                    Vector3 newTotal = Vector3.ClampMagnitude(currentVelocityOnInputsPlane + addedVelocity, _finalAirSpeed);
                                     addedVelocity = newTotal - currentVelocityOnInputsPlane;
                                 }
                                 else
@@ -437,7 +435,9 @@ namespace CharacterSystem
 
                             //currentVelocity.y = (currentVelocity.y < -_terminalVelocity) ? -_terminalVelocity : currentVelocity.y;
                             // Drag
-                            currentVelocity *= (1f / (1f + (AirDrag * deltaTime)));
+                            currentVelocity.x *= (1f / (1f + (AirDrag * deltaTime)));
+                            currentVelocity.y *= (1f / (1f + (0.1f * deltaTime)));
+                            currentVelocity.z *= (1f / (1f + (AirDrag * deltaTime)));
                         }
 
                         // Handle jumping
@@ -475,7 +475,7 @@ namespace CharacterSystem
                         }
                         break;
                     }
-                case MovementState.Dash:
+                case MovementStates.Dash:
                     {
                         currentVelocity = _dashInputVec * config.DashSpeed;
                         break;
@@ -490,9 +490,9 @@ namespace CharacterSystem
         /// </summary>
         public void AfterCharacterUpdate(float deltaTime)
         {
-            switch (_movementState)
+            switch (MovementState)
             {
-                case MovementState.Normal:
+                case MovementStates.Normal:
                     {
                         // Handle jump-related values
                         {
@@ -573,41 +573,12 @@ namespace CharacterSystem
             return true;
         }
 
-        public void OnGroundHit(Collider hitCollider, Vector3 hitNormal, Vector3 hitPoint, ref HitStabilityReport hitStabilityReport)
-        {
-        }
-
-        public void OnMovementHit(Collider hitCollider, Vector3 hitNormal, Vector3 hitPoint, ref HitStabilityReport hitStabilityReport)
-        {
-        }
-
-        //public void AddVelocity(Vector3 velocity)
-        //{
-        //    switch (_movementState)
-        //    {
-        //        case MovementState.Normal:
-        //            {
-        //                _internalVelocityAdd += velocity;
-        //                break;
-        //            }
-        //    }
-        //}
-
-        public void ProcessHitStabilityReport(Collider hitCollider, Vector3 hitNormal, Vector3 hitPoint, Vector3 atCharacterPosition, Quaternion atCharacterRotation, ref HitStabilityReport hitStabilityReport)
-        {
-        }
-
-        protected void OnLanded()
-        {
-        }
-
-        protected void OnLeaveStableGround()
-        {
-        }
-
-        public void OnDiscreteCollisionDetected(Collider hitCollider)
-        {
-        }
+        public void OnGroundHit(Collider hitCollider, Vector3 hitNormal, Vector3 hitPoint, ref HitStabilityReport hitStabilityReport) { }
+        public void OnMovementHit(Collider hitCollider, Vector3 hitNormal, Vector3 hitPoint, ref HitStabilityReport hitStabilityReport) { }
+        public void ProcessHitStabilityReport(Collider hitCollider, Vector3 hitNormal, Vector3 hitPoint, Vector3 atCharacterPosition, Quaternion atCharacterRotation, ref HitStabilityReport hitStabilityReport) { }
+        protected void OnLanded() { }
+        protected void OnLeaveStableGround() { }
+        public void OnDiscreteCollisionDetected(Collider hitCollider) { }
         public void LateUpdate()
         {
             if (_input.look.sqrMagnitude >= 0.01f)
@@ -615,17 +586,17 @@ namespace CharacterSystem
                 //Don't multiply mouse input by Time.deltaTime
                 float deltaTimeMultiplier = IsCurrentDeviceMouse ? 1.0f : Time.deltaTime;
 
-                _cinemachineTargetPitch += _input.look.y * config.RotationSpeed * deltaTimeMultiplier;
+                pitchRotation += _input.look.y * config.RotationSpeed * deltaTimeMultiplier;
                 _rotationVelocity = _input.look.x * config.RotationSpeed * deltaTimeMultiplier;
 
                 // clamp our pitch rotation
-                _cinemachineTargetPitch = ClampAngle(_cinemachineTargetPitch, -90f, 90f);
+                pitchRotation = ClampAngle(pitchRotation, -90f, 90f);
 
                 // Update Cinemachine camera target pitch
-                CinemachineCameraTarget.transform.localEulerAngles = new Vector3(_cinemachineTargetPitch, 0f, 0f);
+                CinemachineCameraTarget.transform.localEulerAngles = new Vector3(pitchRotation, 0f, 0f);
 
                 // rotate the player left and right
-                _tgtYaw *= Quaternion.Euler(0f, _rotationVelocity, 0f);
+                yawRotation *= Quaternion.Euler(0f, _rotationVelocity, 0f);
                 //CinemachineCameraTarget.transform.Rotate(new Vector3(0, _rotationVelocity,0));
             }
             if (Crouching && _crouchLerpTime < 1)
@@ -775,9 +746,13 @@ namespace CharacterSystem
             ColdState = (_coldTriggerCount > 0) ? (byte)1 : (byte)0;
             HotState = (_hotTriggerCount > 0) ? (byte)1 : (byte)0;
             ClimbState = (_climbTriggerCount > 0) ? (byte)1 : (byte)0;
-
-            foreach (Collider col in Physics.OverlapSphere(CinemachineCameraTarget.transform.position, 0.1f))
+            int InsideZoneCheckMax=10;
+            Collider[] colArray = new Collider[InsideZoneCheckMax];
+            Physics.OverlapSphereNonAlloc(CinemachineCameraTarget.transform.position, 0.1f, colArray );
+            for (int i = 0; i < colArray.Length; i++)
             {
+                if (colArray[i]==null) { break; }
+                Collider col = colArray[i];
                 switch (col.tag)
                 {
                     case "Water":
@@ -801,7 +776,7 @@ namespace CharacterSystem
         {
             Motor.BaseVelocity = Vector3.zero;
             Motor.SetPosition(pos);
-            SetMovementState(MovementState.Normal);
+            SetMovementState(MovementStates.Normal);
         }
         private void DebugArrow(Vector3 start, Vector3 dir, float headLength, float angle, Color color)
         {

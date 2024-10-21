@@ -1,14 +1,14 @@
 using UnityEngine;
 namespace CharacterSystem 
 {
-    public class TokenNew : MonoBehaviour
+    public class Token : MonoBehaviour
     {
         public TokenType upgradeType;
-        private UpgradeManagerNew upgradeManager;
+        private UpgradeManager upgradeManager;
 
         private void Start()
         {
-            upgradeManager = FindObjectOfType<UpgradeManagerNew>();
+            upgradeManager = FindObjectOfType<UpgradeManager>();
         }
 
         private void OnTriggerEnter(Collider other)

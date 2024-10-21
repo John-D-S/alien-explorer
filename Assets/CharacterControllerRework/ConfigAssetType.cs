@@ -36,17 +36,18 @@ namespace CharacterSystem
         public float WaterTerminalVelocity = 3f;
         public float Buoyancy = 25f;
         [Header("Climbing")]
-        public float ClimbAccel = 30;
+        public float ClimbAccel = 50f;
         public float ClimbUpVel = 6f;
         public float ClimbDownVel = 3f;
         public float ClimbSlowFall = 10f; //same as buoyancy but would be weird to call it that
-        public float ClimbAirDrag = 1f;
+        public float ClimbAirDrag = 3f;
         [Header("Misc")]
         public List<Collider> IgnoredColliders = new List<Collider>();
         public float DefaultGravityStrength = 30f;
         public float CrouchedCapsuleHeight = 50f;
         public float BaseTerminalVelocity = 50f;
         public float RespawnTimerLength = 1f;
+        public float InteractRange = 2f;
         [Header("Dash")]
         public float DashLength = 0.1f;
         public float DashCooldownLength = 2f;

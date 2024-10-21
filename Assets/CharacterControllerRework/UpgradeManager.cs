@@ -62,7 +62,7 @@ namespace CharacterSystem
         Smash
     }
 
-    public class UpgradeManagerNew : MonoBehaviour
+    public class UpgradeManager : MonoBehaviour
     {
 
         public PlayerController Player;
