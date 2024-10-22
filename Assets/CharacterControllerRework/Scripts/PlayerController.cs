@@ -402,18 +402,18 @@ namespace CharacterSystem
                                     }
                                 }
 
-                                // Apply added velocity
-                                currentVelocity += addedVelocity;
-
                                 // Prevent air-climbing sloped walls
-                                if (Motor.GroundingStatus.FoundAnyGround && !Motor.GroundingStatus.IsStableOnGround)
+                                if (Motor.GroundingStatus.FoundAnyGround)
                                 {
-                                    Vector3 wallNormal = Motor.GroundingStatus.GroundNormal;
-                                    if (Vector3.Dot(currentVelocity, wallNormal) > 0f)
+                                    if (Vector3.Dot(currentVelocity + addedVelocity, addedVelocity) > 0f)
                                     {
-                                        currentVelocity = Vector3.ProjectOnPlane(currentVelocity, wallNormal);
+                                        Vector3 perpendicularObstructionNormal = Vector3.Cross(Vector3.Cross(Motor.CharacterUp, Motor.GroundingStatus.GroundNormal), Motor.CharacterUp).normalized;
+                                        addedVelocity = Vector3.ProjectOnPlane(addedVelocity, perpendicularObstructionNormal);
                                     }
                                 }
+
+                                // Apply added velocity
+                                currentVelocity += addedVelocity;
 
                             }
 

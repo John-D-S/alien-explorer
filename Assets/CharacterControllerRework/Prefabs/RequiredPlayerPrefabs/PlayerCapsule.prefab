@@ -340,7 +340,7 @@ MonoBehaviour:
   MinRequiredStepDepth: 0.1
   LedgeAndDenivelationHandling: 1
   MaxStableDistanceFromLedge: 0.5
-  MaxVelocityForLedgeSnap: 0
+  MaxVelocityForLedgeSnap: 20
   MaxStableDenivelationAngle: 180
   InteractiveRigidbodyHandling: 1
   RigidbodyInteractionType: 0
