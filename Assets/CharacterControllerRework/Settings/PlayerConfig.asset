@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 80f9570c4d80d6145b62442963a48f79, type: 3}
   m_Name: PlayerConfig
   m_EditorClassIdentifier: 
-  BaseSpeed: 4
+  BaseSpeed: 5
   MovementSharpness: 15
   BaseAirSpeed: 4
   AirAccel: 10
