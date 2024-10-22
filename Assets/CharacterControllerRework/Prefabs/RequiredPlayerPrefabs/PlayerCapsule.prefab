@@ -166,6 +166,12 @@ MonoBehaviour:
   RespawnDeltaTime: 0
   MovementState: 0
   TempBlackoutUI: {fileID: 0}
+  EnableDebugVelocityArrow: 0
+  DebugArrowShaft: {fileID: -4473909049464785010, guid: d2d37337fc4c89f4191692dc49119cc9,
+    type: 3}
+  DebugArrowHead: {fileID: -3766158587265782694, guid: 0224712b506caf94f8645f5eab1c7ab1,
+    type: 3}
+  EnableDebugRespawnPosition: 0
 --- !u!114 &8889454140811505928
 MonoBehaviour:
   m_ObjectHideFlags: 0

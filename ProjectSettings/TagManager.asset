@@ -7,8 +7,9 @@ TagManager:
   - Water
   - HotZone
   - ColdZone
-  - Moving
   - ClimbZone
+  - NoRespawn
+  - Terrain
   layers:
   - Default
   - TransparentFX

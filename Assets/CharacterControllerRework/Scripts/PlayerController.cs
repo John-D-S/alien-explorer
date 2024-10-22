@@ -4,10 +4,11 @@ using UnityEngine;
 using KinematicCharacterController;
 using UnityEngine.InputSystem;
 using System;
-using Unity.VisualScripting;
 using UnityEngine.UI;
 using UnityEngine.Assertions.Must;
 using Cinemachine;
+using UnityEditor;
+using UnityEngine.UIElements;
 
 
 namespace CharacterSystem
@@ -170,7 +171,6 @@ namespace CharacterSystem
         /// </summary>
         private void Update()
         {
-            DebugArrow(transform.position + Vector3.up, Motor.BaseVelocity / 5, 0.2f, 30f, Color.red);
 
 
             Color col = TempBlackoutUI.color;
@@ -181,7 +181,7 @@ namespace CharacterSystem
 
             // Respawn handling 
 
-            if (Motor.GroundingStatus.IsStableOnGround && !Motor.GroundingStatus.GroundCollider.CompareTag("Moving"))
+            if (Motor.GroundingStatus.IsStableOnGround && !Motor.GroundingStatus.GroundCollider.CompareTag("NoRespawn"))
             {
                 if ((WaterState == 0 || MyUpgrades.Swim) && (HotState == 0 || MyUpgrades.Heat) && (ColdState == 0 || MyUpgrades.Cold))
                 {
@@ -778,15 +778,29 @@ namespace CharacterSystem
             Motor.SetPosition(pos);
             SetMovementState(MovementStates.Normal);
         }
-        private void DebugArrow(Vector3 start, Vector3 dir, float headLength, float angle, Color color)
+#if UNITY_EDITOR
+        [Header("Debug")]
+        public bool EnableDebugVelocityArrow = false;
+        public Mesh DebugArrowShaft;
+        public Mesh DebugArrowHead;
+        public bool EnableDebugRespawnPosition = false;
+        private void OnDrawGizmos()
         {
-            Vector3 right = Vector3.Cross(dir.normalized, Vector3.up);
-            Vector3 up = Vector3.Cross(right, dir);
-            Quaternion arrowRot = Quaternion.AngleAxis(angle, up);
-            Debug.DrawRay(start, dir, color);
-            Vector3 head = dir.normalized * -headLength;
-            Debug.DrawRay(start + dir, arrowRot * head, color);
-            Debug.DrawRay(start + dir, Quaternion.Inverse(arrowRot) * head, color);
+            Gizmos.color = new Color(1, 0, 0, 0.25f);
+
+            if (Motor.BaseVelocity.magnitude>0 && EnableDebugVelocityArrow)
+            {
+                Quaternion ArrowRot = Quaternion.LookRotation(Motor.BaseVelocity);
+                
+                Gizmos.DrawMesh(DebugArrowShaft, -1, transform.position + Vector3.up, ArrowRot, new Vector3(1, 1, Motor.BaseVelocity.magnitude / 5));
+                Gizmos.DrawMesh(DebugArrowHead, -1, (transform.position + Vector3.up) + (Motor.BaseVelocity / 5), ArrowRot);
+            }
+            if (EnableDebugRespawnPosition)
+            {
+                Gizmos.DrawSphere(RespawnPos, 0.1f);
+            }
         }
+
+#endif
     }
 }
