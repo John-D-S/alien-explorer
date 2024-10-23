@@ -24,6 +24,15 @@
                     "initialStateCheck": true
                 },
                 {
+                    "name": "SuperJump",
+                    "type": "PassThrough",
+                    "id": "8f0d10f7-8281-4bcc-be13-d713d727f55c",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
                     "name": "Jump",
                     "type": "PassThrough",
                     "id": "8c4abdf8-4099-493a-aa1a-129acec7c3df",
@@ -259,6 +268,17 @@
                 },
                 {
                     "name": "",
+                    "id": "5482b56e-e442-468c-bc18-f4ac702d3394",
+                    "path": "<Mouse>/rightButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "KeyboardMouse",
+                    "action": "Dash",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
                     "id": "47caf2a8-608b-420a-a0f5-8e0b5e034435",
                     "path": "<Keyboard>/leftCtrl",
                     "interactions": "",
@@ -276,6 +296,17 @@
                     "processors": "",
                     "groups": "KeyboardMouse",
                     "action": "Interact",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "8d4fb33b-ec91-4625-80f6-f2b92b4a645f",
+                    "path": "<Mouse>/middleButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "KeyboardMouse",
+                    "action": "SuperJump",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
