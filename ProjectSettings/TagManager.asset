@@ -4,9 +4,12 @@
 TagManager:
   serializedVersion: 2
   tags:
-  - Plant
-  - Rock
-  - CinemachineTarget
+  - Water
+  - HotZone
+  - ColdZone
+  - ClimbZone
+  - NoRespawn
+  - Terrain
   layers:
   - Default
   - TransparentFX
@@ -14,10 +17,10 @@ TagManager:
   - SPECIAL
   - Water
   - UI
-  - WaterBarrier
-  - HotZone
-  - ColdZone
-  - Climbable
+  - 
+  - 
+  - 
+  - 
   - 
   - 
   - 
