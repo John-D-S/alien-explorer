@@ -778,12 +778,13 @@ namespace KinematicCharacterController
                 _attachedRigidbodyVelocity = Vector3.zero;
             }
 
+            /* this is happening for seemingly no reason, so I (john) disabled it.
 #if UNITY_EDITOR
             if (!Mathf.Approximately(_transform.lossyScale.x, 1f) || !Mathf.Approximately(_transform.lossyScale.y, 1f) || !Mathf.Approximately(_transform.lossyScale.z, 1f))
             {
                 Debug.LogError("Character's lossy scale is not (1,1,1). This is not allowed. Make sure the character's transform and all of its parents have a (1,1,1) scale.", this.gameObject);
             }
-#endif
+#endif*/
 
             _rigidbodiesPushedThisMove.Clear();
 

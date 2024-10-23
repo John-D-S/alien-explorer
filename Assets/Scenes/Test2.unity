@@ -4178,11 +4178,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 8889454140811505929, guid: 1a8a92ddd8ed95145a468a5f02cad1af,
-        type: 3}
-      propertyPath: GroundDetectionExtraDistance
-      value: 0.01
-      objectReference: {fileID: 0}
     - target: {fileID: 8889454140811505933, guid: 1a8a92ddd8ed95145a468a5f02cad1af,
         type: 3}
       propertyPath: TempBlackoutUI

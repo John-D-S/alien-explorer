@@ -23,7 +23,7 @@ MonoBehaviour:
   JumpUpSpeed: 10
   JumpPreGroundingGraceTime: 0
   JumpPostGroundingGraceTime: 0
-  SuperJumpMultiplier: 3
+  SuperJumpMultiplier: 2
   WaterAscendAccel: 10
   WaterAscendVel: 5
   WaterBaseSpeed: 3
@@ -45,9 +45,11 @@ MonoBehaviour:
   BaseTerminalVelocity: 50
   RespawnTimerLength: 1
   InteractRange: 2
-  DashLength: 0.1
-  DashCooldownLength: 2
+  DashLength: 0.225
   DashSpeed: 20
+  MaxDecelerationDuration: 0.25
+  DashDecelerationAmount: 5
+  DashCooldownLength: 1
   GlideTerminalVelocity: 2
   CinemachineBaseHeight: 1.375
   RotationSpeed: 1

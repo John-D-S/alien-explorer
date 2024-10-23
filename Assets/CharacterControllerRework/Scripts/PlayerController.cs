@@ -1,21 +1,13 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using KinematicCharacterController;
 using UnityEngine.InputSystem;
 using System;
-using UnityEngine.UI;
-using UnityEngine.Assertions.Must;
-using Cinemachine;
-using UnityEditor;
-using UnityEngine.UIElements;
 
 
 namespace CharacterSystem
 {
     public class PlayerController : MonoBehaviour, ICharacterController
     {
-
         [Header("Assets/objects/components")]
         public KinematicCharacterMotor Motor;
         public ConfigAssetType config;
@@ -46,7 +38,10 @@ namespace CharacterSystem
         public float AscendAccel = 0; //upwards acceleration while holding jump button- used for swimming
         public bool Crouching = false;
         public Vector3 RespawnPos;
-        public float RespawnDeltaTime = 0f;
+        public float RespawnDeltaTime = 0f; 
+        public bool _isDeceleratingAfterDash = false;
+        public float _decelerationTimer = 0f;
+        public Vector3 _initialHorizontalVelocity;
 
 
         public enum MovementStates
@@ -76,6 +71,7 @@ namespace CharacterSystem
         private bool _jumpedThisFrame = false;
         private float _timeSinceJumpRequested = Mathf.Infinity;
         private float _timeSinceLastAbleToJump = 0f;
+        private float _timeSinceLastUncrouched = 10f;
         private Vector3 _internalVelocityAdd = Vector3.zero;
         private bool _shouldBeCrouching = false;
 
@@ -132,34 +128,28 @@ namespace CharacterSystem
             switch (MovementState)
             {
                 case MovementStates.Normal:
-                    {
-                        break;
-                    }
+                    break;
                 case MovementStates.Dash:
-                    {
-                        _dashTimer = 0;
-                        Motor.AllowSteppingWithoutStableGrounding = false;
-                        break;
-                    }
+                    _dashTimer = 0;
+                    Motor.AllowSteppingWithoutStableGrounding = false;
+                    break;
             }
-
             
-            //When entering a movement state
+            // When entering a movement state
             switch (newState)
             {
                 case MovementStates.Normal:
-                    {
-                        break;
-                    }
+                    break;
                 case MovementStates.Dash:
-                    {
-                        _dashTimer = 0;
+                    _dashTimer = 0f;
+                    _dashInputVec = (_moveInputVector.magnitude > 0.05f) ? Vector3.ProjectOnPlane(_moveInputVector.normalized, Motor.CharacterUp) : Motor.CharacterForward;
+                    _dashReady = false;
+                    Motor.AllowSteppingWithoutStableGrounding = true;
 
-                        _dashInputVec = (_moveInputVector.magnitude > 0.05f) ? Vector3.ProjectOnPlane(_moveInputVector.normalized, Motor.CharacterUp) : Motor.CharacterForward;
-                        _dashReady = false;
-                        Motor.AllowSteppingWithoutStableGrounding = true;
-                        break;
-                    }
+                    // Record the player's horizontal velocity at the start of the dash
+                    _initialHorizontalVelocity = Vector3.ProjectOnPlane(Motor.BaseVelocity, Motor.CharacterUp);
+
+                    break;
             }
             MovementState = newState;
 
@@ -171,8 +161,6 @@ namespace CharacterSystem
         /// </summary>
         private void Update()
         {
-
-
             Color col = TempBlackoutUI.color;
             col.a = Mathf.InverseLerp(config.RespawnTimerLength, 0, RespawnDeltaTime);
             TempBlackoutUI.color = col;
@@ -201,6 +189,12 @@ namespace CharacterSystem
             } else
             {
                 RespawnDeltaTime = config.RespawnTimerLength;
+            }
+            
+            //increase the crouch timer if not crouching
+            if (!Crouching)
+            {
+                _timeSinceLastUncrouched += Time.deltaTime;
             }
 
             // Clamp input
@@ -284,17 +278,20 @@ namespace CharacterSystem
                             _finalSpeed = BaseSpeed;
                         }
                         _finalAirSpeed = _finalSpeed;
-                        JumpUpMul = (MyUpgrades.Jump && Crouching) ? config.SuperJumpMultiplier : 1f;
+                        JumpUpMul = (MyUpgrades.Jump && (Crouching || _timeSinceLastUncrouched <= config.SuperJumpGracePeriod)) ? config.SuperJumpMultiplier : 1f;
                         break;
                     }
                 case MovementStates.Dash:
                     {
                         _dashTimer += Time.deltaTime;
-                        if (_dashTimer > config.DashLength || Motor.BaseVelocity.sqrMagnitude < 0.1)
+                        if (_dashTimer > config.DashLength)
                         {
                             SetMovementState(MovementStates.Normal);
+                            _isDeceleratingAfterDash = true;
+                            _decelerationTimer = 0f;
                         }
                         break;
+
                     }
             }
             if (MyUpgrades.Smash || MyUpgrades.Cut)
@@ -456,7 +453,7 @@ namespace CharacterSystem
                                 }
 
                                 // Makes the character skip ground probing/snapping on its next update. 
-                                // If this line weren't here, the character would remain snapped to the ground when trying to jump. Try commenting this line out and see.
+                                // If this line weren't here, the character would remain snapped to the ground when trying to jump.
                                 Motor.ForceUnground();
 
                                 // Add to the return velocity and reset jump state
@@ -473,13 +470,48 @@ namespace CharacterSystem
                             currentVelocity += _internalVelocityAdd;
                             _internalVelocityAdd = Vector3.zero;
                         }
+                        
+                        // Apply extra horizontal drag if decelerating after dash
+                        if (_isDeceleratingAfterDash)
+                        {
+                            _decelerationTimer += deltaTime;
+
+                            // Project current velocity onto horizontal plane
+                            Vector3 horizontalVelocity = Vector3.ProjectOnPlane(currentVelocity, Motor.CharacterUp);
+                            float horizontalSpeed = horizontalVelocity.magnitude;
+
+                            // Project initial velocity onto horizontal plane
+                            float initialHorizontalSpeed = _initialHorizontalVelocity.magnitude;
+
+                            if (horizontalSpeed > initialHorizontalSpeed && _decelerationTimer < config.MaxDecelerationDuration)
+                            {
+                                // Apply horizontal drag
+                                horizontalVelocity *= (1f / (1f + (config.DashDecelerationAmount * deltaTime)));
+
+                                // Recombine horizontal and vertical components
+                                currentVelocity = horizontalVelocity + Vector3.Project(currentVelocity, Motor.CharacterUp);
+                            }
+                            else
+                            {
+                                // Stop decelerating
+                                _isDeceleratingAfterDash = false;
+
+                                // Ensure we don't go below initial horizontal speed
+                                if (horizontalSpeed < initialHorizontalSpeed)
+                                {
+                                    // Adjust horizontal velocity to initial speed in the same direction
+                                    horizontalVelocity = horizontalVelocity.normalized * initialHorizontalSpeed;
+                                    currentVelocity = horizontalVelocity + Vector3.Project(currentVelocity, Motor.CharacterUp);
+                                }
+                            }
+                        }
                         break;
                     }
                 case MovementStates.Dash:
                     {
                         currentVelocity = _dashInputVec * config.DashSpeed;
+                        currentVelocity.y = 0f; // Keep altitude the same
                         break;
-
                     }
             }
         }
@@ -537,6 +569,7 @@ namespace CharacterSystem
                             {
                                 // If no obstructions, uncrouch
                                 Crouching = false;
+                                _timeSinceLastUncrouched = 0f; //reset the uncrouched timer
                             }
                         }
 

@@ -23,6 +23,7 @@ namespace CharacterSystem
         public float JumpUpSpeed = 10f;
         public float JumpPreGroundingGraceTime = 0f;
         public float JumpPostGroundingGraceTime = 0f;
+        public float SuperJumpGracePeriod = 0.25f; // how long after crouching can a superjump be performed
         public float SuperJumpMultiplier = 3f;
         [Header("Underwater")]
         public float WaterAscendAccel = 10f;
@@ -50,8 +51,10 @@ namespace CharacterSystem
         public float InteractRange = 2f;
         [Header("Dash")]
         public float DashLength = 0.1f;
-        public float DashCooldownLength = 2f;
         public float DashSpeed = 20f;
+        public float MaxDecelerationDuration = 0.25f;
+        public float DashDecelerationAmount = 5f;
+        public float DashCooldownLength = 2f;
         [Header("Glide")]
         public float GlideTerminalVelocity = 2f;
         [Header("Hazard")]
