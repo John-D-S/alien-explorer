@@ -8,6 +8,7 @@ namespace CharacterSystem
 		public Vector2 move;
 		public Vector2 look;
 		public bool jump;
+		public bool superJump;
 		public bool sprint;
 		public bool crouch;
 		public bool dash;
@@ -20,7 +21,6 @@ namespace CharacterSystem
 		public bool cursorInputForLook = true;
 		public void OnMove(InputValue value)
 		{
-
             move = value.Get<Vector2>();
         }
 
@@ -37,6 +37,11 @@ namespace CharacterSystem
 			jump = value.isPressed;
 		}
 
+		public void OnSuperJump(InputValue value)
+		{
+			superJump = value.isPressed;
+		}
+		
 		public void OnSprint(InputValue value)
 		{
 			sprint = value.isPressed;
