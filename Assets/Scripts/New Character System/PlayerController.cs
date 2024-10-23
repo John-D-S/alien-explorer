@@ -209,9 +209,10 @@ namespace CharacterSystem
             switch (MovementState)
             {
                 case MovementStates.Normal:
-                    {
+                {
+                        bool superJump = MyUpgrades.Jump && _input.superJump;
                         // Request jump if jump input
-                        if (_input.jump)
+                        if (_input.jump || superJump)
                         {
                             _timeSinceJumpRequested = 0f;
                             _jumpRequested = true;
@@ -278,7 +279,17 @@ namespace CharacterSystem
                             _finalSpeed = BaseSpeed;
                         }
                         _finalAirSpeed = _finalSpeed;
-                        JumpUpMul = (MyUpgrades.Jump && (Crouching || _timeSinceLastUncrouched <= config.SuperJumpGracePeriod)) ? config.SuperJumpMultiplier : 1f;
+                        
+                        //there is now a dedicated superjump button. the latter part of the if statement may be removed
+                        //if it is determined that the old superjump method is unessecary
+                        if(superJump)
+                        {
+                            JumpUpMul = config.SuperJumpMultiplier;
+                        }
+                        else
+                        {
+                            JumpUpMul = (MyUpgrades.Jump && (Crouching || _timeSinceLastUncrouched <= config.SuperJumpGracePeriod)) ? config.SuperJumpMultiplier : 1f;
+                        }
                         break;
                     }
                 case MovementStates.Dash:
@@ -414,7 +425,9 @@ namespace CharacterSystem
 
                             }
 
-                            if (AscendAccel > 0 && _input.jump && currentVelocity.y < AscendVel)
+                            //for climbing or swimming up
+                            //you can also climb up by moving
+                            if (AscendAccel > 0 && (_input.jump || (ClimbState != 0 && _input.move.magnitude > 0.01f)) && currentVelocity.y < AscendVel )
                             {
                                 currentVelocity.y += AscendAccel * deltaTime;
                             }
