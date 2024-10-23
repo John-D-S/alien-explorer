@@ -592,6 +592,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 490713462}
+  - component: {fileID: 490713463}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -618,6 +619,18 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &490713463
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 490713461}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8d595fba352f36140b24fc6cabd9d5f5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &562598977
 GameObject:
   m_ObjectHideFlags: 0
@@ -4164,6 +4177,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8889454140811505929, guid: 1a8a92ddd8ed95145a468a5f02cad1af,
+        type: 3}
+      propertyPath: GroundDetectionExtraDistance
+      value: 0.01
       objectReference: {fileID: 0}
     - target: {fileID: 8889454140811505933, guid: 1a8a92ddd8ed95145a468a5f02cad1af,
         type: 3}

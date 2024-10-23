@@ -909,8 +909,8 @@ namespace KinematicCharacterController
                             selectedGroundProbingDistance = CapsuleRadius;
                         }
 
-                        selectedGroundProbingDistance += GroundDetectionExtraDistance;
                     }
+                    selectedGroundProbingDistance += GroundDetectionExtraDistance;
 
                     ProbeGround(ref _transientPosition, _transientRotation, selectedGroundProbingDistance, ref GroundingStatus);
 
