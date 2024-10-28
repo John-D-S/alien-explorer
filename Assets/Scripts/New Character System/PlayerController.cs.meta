@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: e9c47ea8da4863b4583c74ffa9dc90b4
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - Motor: {instanceID: 0}
+  - config: {fileID: 11400000, guid: 8de3578ebbdd6b346ae937dbf73e25a9, type: 2}
+  - CinemachineCameraTarget: {instanceID: 0}
+  - tempwatercollider: {instanceID: 0}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

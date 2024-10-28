@@ -4,19 +4,22 @@
 TagManager:
   serializedVersion: 2
   tags:
-  - Plant
-  - Rock
-  - MovingPlatform
+  - Water
+  - HotZone
+  - ColdZone
+  - ClimbZone
+  - NoRespawn
+  - Terrain
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - SPECIAL
   - Water
   - UI
-  - WaterBarrier
-  - HotZone
-  - ColdZone
+  - 
+  - 
+  - 
   - 
   - 
   - 
