@@ -11,9 +11,10 @@ GameObject:
   - component: {fileID: 5364951373337871535}
   - component: {fileID: 4009764355316859754}
   - component: {fileID: 5599338839333716488}
+  - component: {fileID: 6730652806712829964}
   m_Layer: 0
   m_Name: ClimbingLedges
-  m_TagString: Untagged
+  m_TagString: ClimbZone
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -83,3 +84,17 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!64 &6730652806712829964
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2221321711758926529}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 4
+  m_Convex: 1
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 7517174661722822065, guid: fe1f195f0fc864b4c855e3f7256ca7b2, type: 3}

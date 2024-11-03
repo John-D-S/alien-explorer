@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 1193366615587621205}
   - component: {fileID: 779958490093677877}
   - component: {fileID: 554642689975500460}
+  - component: {fileID: 460109637546304483}
   m_Layer: 0
   m_Name: LargeRock2
   m_TagString: Untagged
@@ -83,3 +84,17 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!64 &460109637546304483
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1666440366556509032}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 4
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: -8078321303703008456, guid: 8454bee35cd25ca4e80f321520a0a65e, type: 3}
