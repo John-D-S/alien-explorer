@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 8995598630815868635}
   - component: {fileID: 5940285990359129668}
   - component: {fileID: 809576126697259287}
+  - component: {fileID: 4802291104058432258}
   m_Layer: 0
   m_Name: Gum1
   m_TagString: Untagged
@@ -83,3 +84,17 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!64 &4802291104058432258
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5138955829043688011}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 4
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 8946797375705397210, guid: fe1f195f0fc864b4c855e3f7256ca7b2, type: 3}
