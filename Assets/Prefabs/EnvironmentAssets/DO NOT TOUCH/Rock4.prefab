@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 1686080077730382536}
   - component: {fileID: 3241825086897350366}
   - component: {fileID: 2018123506601242472}
+  - component: {fileID: 3733372229228742591}
   m_Layer: 0
   m_Name: Rock4
   m_TagString: Untagged
@@ -83,3 +84,17 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!64 &3733372229228742591
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 217844332145305836}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 4
+  m_Convex: 1
+  m_CookingOptions: 30
+  m_Mesh: {fileID: -2519473635315226807, guid: 8454bee35cd25ca4e80f321520a0a65e, type: 3}
