@@ -122,6 +122,11 @@ PrefabInstance:
       objectReference: {fileID: 3737474366144646710}
     - target: {fileID: 8911690193137565375, guid: d1806a4ae24b0c544bd99d66876a23f8,
         type: 3}
+      propertyPath: alreadyScannedIcon
+      value: 
+      objectReference: {fileID: 5320249976531945017}
+    - target: {fileID: 8911690193137565375, guid: d1806a4ae24b0c544bd99d66876a23f8,
+        type: 3}
       propertyPath: scanProgressRadial
       value: 
       objectReference: {fileID: 2118921701160579039}
@@ -483,6 +488,12 @@ MonoBehaviour:
 --- !u!1 &3737474366144646710 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 338703404492099315, guid: d81bc06ed1aa98d4a88556deed1148e8,
+    type: 3}
+  m_PrefabInstance: {fileID: 3993986784971817157}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &5320249976531945017 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 9131099902425564924, guid: d81bc06ed1aa98d4a88556deed1148e8,
     type: 3}
   m_PrefabInstance: {fileID: 3993986784971817157}
   m_PrefabAsset: {fileID: 0}
