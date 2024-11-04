@@ -56,6 +56,7 @@ namespace CharacterSystem
         private uint _hotTriggerCount = 0;
         private uint _coldTriggerCount = 0;
         private uint _climbTriggerCount = 0;
+        private uint _noRespawnTriggerCount = 0;
         private float _finalSpeed;
         private float _finalAirSpeed;
         private bool _jumpConsumed = false;
@@ -169,7 +170,7 @@ namespace CharacterSystem
 
             // Respawn handling 
 
-            if (Motor.GroundingStatus.IsStableOnGround && !Motor.GroundingStatus.GroundCollider.CompareTag("NoRespawn"))
+            if (Motor.GroundingStatus.IsStableOnGround && !Motor.GroundingStatus.GroundCollider.CompareTag("NoRespawn") && _noRespawnTriggerCount < 1)
             {
                 if ((WaterState == 0 || MyUpgrades.Swim) && (HotState == 0 || MyUpgrades.Heat) && (ColdState == 0 || MyUpgrades.Cold))
                 {
@@ -712,8 +713,10 @@ namespace CharacterSystem
                             TerminalVelocity = Math.Min(config.ClimbDownVel, config.WaterTerminalVelocity);
                             AirDrag = Math.Max(config.ClimbAirDrag, config.WaterAirDrag);
                         }
-
                     }
+                    break;
+                case "NoRespawn":
+                    _noRespawnTriggerCount++;
                     break;
                 default:
                     break;
@@ -781,6 +784,9 @@ namespace CharacterSystem
                             AirDrag = config.WaterAirDrag;
                         }
                     }
+                    break;
+                case "NoRespawn":
+                    _noRespawnTriggerCount--;
                     break;
                 default:
                     break;
