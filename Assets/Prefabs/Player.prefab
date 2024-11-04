@@ -115,6 +115,16 @@ PrefabInstance:
       propertyPath: m_Name
       value: MainCamera
       objectReference: {fileID: 0}
+    - target: {fileID: 8911690193137565375, guid: d1806a4ae24b0c544bd99d66876a23f8,
+        type: 3}
+      propertyPath: scanIndicatorIcon
+      value: 
+      objectReference: {fileID: 3737474366144646710}
+    - target: {fileID: 8911690193137565375, guid: d1806a4ae24b0c544bd99d66876a23f8,
+        type: 3}
+      propertyPath: scanProgressRadial
+      value: 
+      objectReference: {fileID: 2118921701160579039}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d1806a4ae24b0c544bd99d66876a23f8, type: 3}
 --- !u!20 &211772913034012962 stripped
@@ -455,6 +465,24 @@ GameObject:
 --- !u!224 &1974948284864745164 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 3171960005523459593, guid: d81bc06ed1aa98d4a88556deed1148e8,
+    type: 3}
+  m_PrefabInstance: {fileID: 3993986784971817157}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &2118921701160579039 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3029394083829477146, guid: d81bc06ed1aa98d4a88556deed1148e8,
+    type: 3}
+  m_PrefabInstance: {fileID: 3993986784971817157}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!1 &3737474366144646710 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 338703404492099315, guid: d81bc06ed1aa98d4a88556deed1148e8,
     type: 3}
   m_PrefabInstance: {fileID: 3993986784971817157}
   m_PrefabAsset: {fileID: 0}
