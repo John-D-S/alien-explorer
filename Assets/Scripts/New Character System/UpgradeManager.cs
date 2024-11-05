@@ -71,18 +71,6 @@ namespace CharacterSystem
         public int requiredTokenNumber = 4;
         private Dictionary<TokenType, Upgrade> TokenToUpgrade;
         private Dictionary<TokenType, Button> upgradeButtons = new Dictionary<TokenType, Button>();
-    //    [HideInInspector]
-    //    public List<Upgrade> upgrades = new List<Upgrade>
-    //{
-    //    new Upgrade { type = TokenType.Jump},
-    //    new Upgrade { type = TokenType.Dash},
-    //    new Upgrade { type = TokenType.Swim},
-    //    new Upgrade { type = TokenType.Glide},
-    //    new Upgrade { type = TokenType.Heat},
-    //    new Upgrade { type = TokenType.Cold},
-    //    new Upgrade { type = TokenType.Cut},
-    //    new Upgrade { type = TokenType.Smash}
-    //};
 
         private void Start()
         {

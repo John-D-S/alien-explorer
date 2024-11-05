@@ -15,7 +15,7 @@ namespace CharacterSystem
 		[Header("Movement Settings")]
 		public bool analogMovement;
 		public bool interact;
-
+		public bool use;
 		[Header("Mouse Cursor Settings")]
 		public bool cursorLocked = true;
 		public bool cursorInputForLook = true;
@@ -59,6 +59,10 @@ namespace CharacterSystem
 		public void OnInteract(InputValue value)
 		{
 			interact = true;
+		}
+		public void OnUse(InputValue value)
+		{
+			use = value.isPressed;
 		}
 		private void OnApplicationFocus(bool hasFocus)
 		{
