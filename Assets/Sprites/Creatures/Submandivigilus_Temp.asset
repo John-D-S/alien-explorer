@@ -10,11 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 311b2c00135c9484f8d3b7d2eaac725e, type: 3}
-  m_Name: Cornutherium Temp
+  m_Name: Submandivigilus_Temp
   m_EditorClassIdentifier: 
-  creatureSprite: {fileID: 21300000, guid: d4ceaa0f0182fb248a6bfb8b97f3b4bd, type: 3}
-  locomotionType: 0
-  ability: 6
+  creatureSprite: {fileID: 21300000, guid: 7d2162c6c87c7db4b97277b295403a24, type: 3}
+  locomotionType: 2
+  ability: 5
   habitat: 3
-  infoBlurb: As a relatively docile, herbivorous creature, its teeth effortlessly
-    rip apart vegetation to find the best meal.
+  infoBlurb: located in cold mountains, this alien has evolved to withstand the frezzing
+    temperatures located so high up.

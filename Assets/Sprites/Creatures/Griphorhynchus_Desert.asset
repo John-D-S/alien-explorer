@@ -16,4 +16,5 @@ MonoBehaviour:
   locomotionType: 2
   ability: 2
   habitat: 0
-  infoBlurb: 
+  infoBlurb: This alien wields power in the air as its 2 sets wings provide the creature
+    with fast acceleration.
