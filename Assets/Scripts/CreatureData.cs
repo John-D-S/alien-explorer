@@ -15,17 +15,6 @@ public class CreatureData : ScriptableObject
 		Flying
 	}
     
-	public enum Ability
-	{
-		Dashing,
-		Jumping,
-		Flying,
-		Swimming,
-		Hot,
-		Cold,
-		CutPlants,
-		SmashRocks
-	}
     
 	public enum Habitat
 	{
@@ -37,7 +26,7 @@ public class CreatureData : ScriptableObject
 	}
     
 	public Locomotion locomotionType;
-	public Ability ability;
+	public CharacterSystem.TokenType ability;
 	public Habitat habitat;
 	[TextArea(3, 10)]
 	public string infoBlurb;

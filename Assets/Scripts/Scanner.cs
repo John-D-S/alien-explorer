@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
+using CharacterSystem;
 
 public class Scanner : MonoBehaviour
 {
@@ -15,7 +16,7 @@ public class Scanner : MonoBehaviour
     private Camera mainCamera;
     private float currentScanTime = 0f;
     private Creature currentTarget;
-
+    public UpgradeManager upgradeManager;
     // List of scanned creature types
     private List<CreatureData> scannedCreatures = new List<CreatureData>();
 
@@ -99,6 +100,7 @@ public class Scanner : MonoBehaviour
                     c.OnScanned();
                 }
             }
+            upgradeManager.CollectToken(creature.creatureData.ability); 
         }
         ResetScanner();
     }
