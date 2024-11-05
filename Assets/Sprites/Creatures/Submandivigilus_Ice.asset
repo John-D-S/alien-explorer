@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 311b2c00135c9484f8d3b7d2eaac725e, type: 3}
+  m_Name: Submandivigilus_Ice
+  m_EditorClassIdentifier: 
+  creatureSprite: {fileID: 21300000, guid: f544443ca992c9840928b2d43bf8bcb4, type: 3}
+  locomotionType: 0
+  ability: 5
+  habitat: 2
+  infoBlurb: Fit for the cold with this creatures thick skin, this alien has no trouble
+    with intense freezing temperatures.
