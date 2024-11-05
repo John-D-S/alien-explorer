@@ -2,6 +2,7 @@ using UnityEngine;
 using KinematicCharacterController;
 using UnityEngine.InputSystem;
 using System;
+using UnityEngine.UI;
 
 
 namespace CharacterSystem
@@ -12,7 +13,7 @@ namespace CharacterSystem
         public KinematicCharacterMotor Motor;
         public ConfigAssetType config;
         public GameObject CinemachineCameraTarget;
-
+        public Image MapPanel;
         [Header("Upgrades")]
         public Upgrades MyUpgrades = new Upgrades(false, 0);
 
@@ -44,18 +45,19 @@ namespace CharacterSystem
         public Vector3 _initialHorizontalVelocity;
 
 
-        public enum MovementStates
+        public enum MovementState
         {
             Normal,
             Dash,
-            Climb
+            InMenu
         }
-        public MovementStates MovementState;
+        public MovementState MoveState;
 
         private uint _waterTriggerCount = 0;
         private uint _hotTriggerCount = 0;
         private uint _coldTriggerCount = 0;
         private uint _climbTriggerCount = 0;
+        private uint _noRespawnTriggerCount = 0;
         private float _finalSpeed;
         private float _finalAirSpeed;
         private bool _jumpConsumed = false;
@@ -95,7 +97,7 @@ namespace CharacterSystem
         {
             yawRotation = this.transform.rotation;
             // Handle initial state
-            SetMovementState(MovementStates.Normal);
+            SetMovementState(MovementState.Normal);
 
             // Assign the characterController to the motor
             Motor.CharacterController = this;
@@ -121,26 +123,30 @@ namespace CharacterSystem
         /// <summary>
         /// Handles movement state transitions and enter/exit callbacks
         /// </summary>
-        public void SetMovementState(MovementStates newState)
+        public void SetMovementState(MovementState newState)
         {
 
             //When exiting a movement state
-            switch (MovementState)
+            switch (MoveState)
             {
-                case MovementStates.Normal:
+                case MovementState.Normal:
                     break;
-                case MovementStates.Dash:
+                case MovementState.Dash:
                     _dashTimer = 0;
                     Motor.AllowSteppingWithoutStableGrounding = false;
+                    break;
+                case MovementState.InMenu:
+                    Cursor.visible = false;
+                    Cursor.lockState = CursorLockMode.Locked;
                     break;
             }
             
             // When entering a movement state
             switch (newState)
             {
-                case MovementStates.Normal:
+                case MovementState.Normal:
                     break;
-                case MovementStates.Dash:
+                case MovementState.Dash:
                     _dashTimer = 0f;
                     _dashInputVec = (_moveInputVector.magnitude > 0.05f) ? Vector3.ProjectOnPlane(_moveInputVector.normalized, Motor.CharacterUp) : Motor.CharacterForward;
                     _dashReady = false;
@@ -150,8 +156,12 @@ namespace CharacterSystem
                     _initialHorizontalVelocity = Vector3.ProjectOnPlane(Motor.BaseVelocity, Motor.CharacterUp);
 
                     break;
+                case MovementState.InMenu:
+                    Cursor.visible = true;
+                    Cursor.lockState = CursorLockMode.None;
+                    break;
             }
-            MovementState = newState;
+            MoveState = newState;
 
         }
 
@@ -161,21 +171,12 @@ namespace CharacterSystem
         /// </summary>
         private void Update()
         {
+
             Color col = TempBlackoutUI.color;
             col.a = Mathf.InverseLerp(config.RespawnTimerLength, 0, RespawnDeltaTime);
             TempBlackoutUI.color = col;
 
-            UpdateZoneState();
 
-            // Respawn handling 
-
-            if (Motor.GroundingStatus.IsStableOnGround && !Motor.GroundingStatus.GroundCollider.CompareTag("NoRespawn"))
-            {
-                if ((WaterState == 0 || MyUpgrades.Swim) && (HotState == 0 || MyUpgrades.Heat) && (ColdState == 0 || MyUpgrades.Cold))
-                {
-                    RespawnPos = transform.position;
-                }
-            }
             if ((WaterState == 2 && !MyUpgrades.Swim) || (HotState == 2 && !MyUpgrades.Heat) || (ColdState == 2 && !MyUpgrades.Cold))
             {
                 if (RespawnDeltaTime > 0)
@@ -206,13 +207,13 @@ namespace CharacterSystem
             _moveInputVector = yawRotation * inputVector;
             //Character state updates
             if (MyUpgrades.Glide && !_jumpReleased && !_input.jump) { _jumpReleased = true; }
-            switch (MovementState)
+            switch (MoveState)
             {
-                case MovementStates.Normal:
+                case MovementState.Normal:
                 {
                         bool superJump = MyUpgrades.Jump && _input.superJump;
                         // Request jump if jump input
-                        if (_input.jump || superJump)
+                        if ((_input.jump || superJump) && WaterState!=2)
                         {
                             _timeSinceJumpRequested = 0f;
                             _jumpRequested = true;
@@ -221,7 +222,7 @@ namespace CharacterSystem
                         //dash
                         if (MyUpgrades.Dash && _input.dash && _dashReady)
                         {
-                            SetMovementState(MovementStates.Dash);
+                            SetMovementState(MovementState.Dash);
                         }
                         if (!_dashReady)
                         {
@@ -292,34 +293,22 @@ namespace CharacterSystem
                         }
                         break;
                     }
-                case MovementStates.Dash:
+                case MovementState.Dash:
                     {
                         _dashTimer += Time.deltaTime;
                         if (_dashTimer > config.DashLength)
                         {
-                            SetMovementState(MovementStates.Normal);
+                            SetMovementState(MovementState.Normal);
                             _isDeceleratingAfterDash = true;
                             _decelerationTimer = 0f;
                         }
                         break;
 
                     }
+                case MovementState.InMenu:
+                    break;
             }
-            if (MyUpgrades.Smash || MyUpgrades.Cut)
-            {
-                Ray InteractRay = new Ray(Camera.main.transform.position, Camera.main.transform.forward);
-
-                if (Physics.Raycast(InteractRay, out RaycastHit HitInfo, config.InteractRange, ~(1 << 2)) && HitInfo.collider.gameObject.TryGetComponent(out Breakable breakable))
-                {
-                    if (_input.interact && 
-                        (((breakable.breakableType == Breakable.BreakableType.Cut) && MyUpgrades.Cut) ||
-                         ((breakable.breakableType == Breakable.BreakableType.Smash) && MyUpgrades.Smash)))
-                    {
-                        breakable.Break();
-                    }
-                }
-            }
-            if (_input.interact) { _input.interact = false; }
+            
             //if ()
         }
 
@@ -340,18 +329,20 @@ namespace CharacterSystem
         /// </summary>
         public void UpdateRotation(ref Quaternion currentRotation, float deltaTime)
         {
-            switch (MovementState)
+            switch (MoveState)
             {
-                case MovementStates.Normal:
+                case MovementState.Normal:
                     {
                         currentRotation = yawRotation;
                         break;
                     }
-                case MovementStates.Dash:
+                case MovementState.Dash:
                     {
                         currentRotation = yawRotation;
                         break;
                     }
+                case MovementState.InMenu:
+                    break;
             }
         }
 
@@ -362,9 +353,9 @@ namespace CharacterSystem
         /// </summary>
         public void UpdateVelocity(ref Vector3 currentVelocity, float deltaTime)
         {
-            switch (MovementState)
+            switch (MoveState)
             {
-                case MovementStates.Normal:
+                case MovementState.Normal:
                     {
                         // Ground movement
                         if (Motor.GroundingStatus.IsStableOnGround)
@@ -520,12 +511,16 @@ namespace CharacterSystem
                         }
                         break;
                     }
-                case MovementStates.Dash:
+                case MovementState.Dash:
                     {
                         currentVelocity = _dashInputVec * config.DashSpeed;
                         currentVelocity.y = 0f; // Keep altitude the same
                         break;
                     }
+                case MovementState.InMenu:
+                    currentVelocity = Vector3.Project(currentVelocity, Vector3.up);
+                    currentVelocity += Gravity;
+                    break;
             }
         }
 
@@ -535,9 +530,9 @@ namespace CharacterSystem
         /// </summary>
         public void AfterCharacterUpdate(float deltaTime)
         {
-            switch (MovementState)
+            switch (MoveState)
             {
-                case MovementStates.Normal:
+                case MovementState.Normal:
                     {
                         // Handle jump-related values
                         {
@@ -588,6 +583,10 @@ namespace CharacterSystem
 
                         break;
                     }
+                case MovementState.Dash:
+                    break;
+                case MovementState.InMenu:
+                    break;
             }
         }
 
@@ -602,6 +601,19 @@ namespace CharacterSystem
             {
                 OnLeaveStableGround();
             }
+            UpdateZoneState();
+
+            // Respawn handling 
+
+
+            if (Motor.GroundingStatus.IsStableOnGround && !Motor.GroundingStatus.GroundCollider.CompareTag("NoRespawn") && _noRespawnTriggerCount < 1)
+            {
+                if ((WaterState == 0 || MyUpgrades.Swim) && (HotState == 0 || MyUpgrades.Heat) && (ColdState == 0 || MyUpgrades.Cold) && (Vector3.Dot(Motor.GroundingStatus.OuterGroundNormal, Motor.GroundingStatus.InnerGroundNormal) < 0.85f))
+                {
+                    RespawnPos = transform.position;
+                }
+            }
+
         }
 
         public bool IsColliderValidForCollisions(Collider coll)
@@ -627,33 +639,59 @@ namespace CharacterSystem
         public void OnDiscreteCollisionDetected(Collider hitCollider) { }
         public void LateUpdate()
         {
-            if (_input.look.sqrMagnitude >= 0.01f)
+            if (MoveState != MovementState.InMenu) 
             {
-                //Don't multiply mouse input by Time.deltaTime
-                float deltaTimeMultiplier = IsCurrentDeviceMouse ? 1.0f : Time.deltaTime;
+                if (_input.look.sqrMagnitude >= 0.01f)
+                {
+                    //Don't multiply mouse input by Time.deltaTime
+                    float deltaTimeMultiplier = IsCurrentDeviceMouse ? 1.0f : Time.deltaTime;
 
-                pitchRotation += _input.look.y * config.RotationSpeed * deltaTimeMultiplier;
-                _rotationVelocity = _input.look.x * config.RotationSpeed * deltaTimeMultiplier;
+                    pitchRotation += _input.look.y * config.RotationSpeed * deltaTimeMultiplier;
+                    _rotationVelocity = _input.look.x * config.RotationSpeed * deltaTimeMultiplier;
 
-                // clamp our pitch rotation
-                pitchRotation = ClampAngle(pitchRotation, -90f, 90f);
+                    // clamp our pitch rotation
+                    pitchRotation = ClampAngle(pitchRotation, -90f, 90f);
 
-                // Update Cinemachine camera target pitch
-                CinemachineCameraTarget.transform.localEulerAngles = new Vector3(pitchRotation, 0f, 0f);
+                    // Update Cinemachine camera target pitch
+                    CinemachineCameraTarget.transform.localEulerAngles = new Vector3(pitchRotation, 0f, 0f);
 
-                // rotate the player left and right
-                yawRotation *= Quaternion.Euler(0f, _rotationVelocity, 0f);
-                //CinemachineCameraTarget.transform.Rotate(new Vector3(0, _rotationVelocity,0));
+                    // rotate the player left and right
+                    yawRotation *= Quaternion.Euler(0f, _rotationVelocity, 0f);
+                    //CinemachineCameraTarget.transform.Rotate(new Vector3(0, _rotationVelocity,0));
+                }
+                if (Crouching && _crouchLerpTime < 1)
+                {
+                    _crouchLerpTime = Mathf.Min(_crouchLerpTime + Time.deltaTime * config.CrouchLerpSpeed, 1);
+                    CinemachineCameraTarget.transform.localPosition = new Vector3(0, Mathf.SmoothStep(config.CinemachineBaseHeight, config.CinemachineBaseHeight / 2, _crouchLerpTime), 0);
+                }
+                else if (!Crouching && _crouchLerpTime > 0)
+                {
+                    _crouchLerpTime = Mathf.Max(_crouchLerpTime - Time.deltaTime * config.CrouchLerpSpeed, 0);
+                    CinemachineCameraTarget.transform.localPosition = new Vector3(0, Mathf.SmoothStep(config.CinemachineBaseHeight, config.CinemachineBaseHeight / 2, _crouchLerpTime), 0);
+                }
             }
-            if (Crouching && _crouchLerpTime < 1)
+            if(MoveState == MovementState.Normal)
             {
-                _crouchLerpTime = Mathf.Min(_crouchLerpTime + Time.deltaTime * config.CrouchLerpSpeed, 1);
-                CinemachineCameraTarget.transform.localPosition = new Vector3(0, Mathf.SmoothStep(config.CinemachineBaseHeight, config.CinemachineBaseHeight / 2, _crouchLerpTime), 0);
-            } else if (!Crouching && _crouchLerpTime > 0)
-            {
-                _crouchLerpTime = Mathf.Max(_crouchLerpTime - Time.deltaTime * config.CrouchLerpSpeed, 0);
-                CinemachineCameraTarget.transform.localPosition = new Vector3(0, Mathf.SmoothStep(config.CinemachineBaseHeight, config.CinemachineBaseHeight / 2, _crouchLerpTime), 0);
+                    Ray InteractRay = new Ray(Camera.main.transform.position, Camera.main.transform.forward);
+
+                    if (Physics.Raycast(InteractRay, out RaycastHit HitInfo, config.InteractRange, ~(1 << 2)))
+                    {
+
+                        if (_input.interact && HitInfo.collider.gameObject.TryGetComponent(out Breakable breakable) &&
+                            (((breakable.breakableType == Breakable.BreakableType.Cut) && MyUpgrades.Cut) ||
+                             ((breakable.breakableType == Breakable.BreakableType.Smash) && MyUpgrades.Smash)))
+                        {
+                            breakable.Break();
+                        }
+                        else if (_input.use && HitInfo.collider.gameObject.TryGetComponent(out IUsable usable))
+                        {
+                            usable.Interact(this);
+                        }
+                    }
+                
             }
+            _input.interact = false;
+            _input.use = false;
 
         }
         private static float ClampAngle(float lfAngle, float lfMin, float lfMax)
@@ -712,8 +750,10 @@ namespace CharacterSystem
                             TerminalVelocity = Math.Min(config.ClimbDownVel, config.WaterTerminalVelocity);
                             AirDrag = Math.Max(config.ClimbAirDrag, config.WaterAirDrag);
                         }
-
                     }
+                    break;
+                case "NoRespawn":
+                    _noRespawnTriggerCount++;
                     break;
                 default:
                     break;
@@ -782,6 +822,9 @@ namespace CharacterSystem
                         }
                     }
                     break;
+                case "NoRespawn":
+                    _noRespawnTriggerCount--;
+                    break;
                 default:
                     break;
             }
@@ -822,7 +865,11 @@ namespace CharacterSystem
         {
             Motor.BaseVelocity = Vector3.zero;
             Motor.SetPosition(pos);
-            SetMovementState(MovementStates.Normal);
+            SetMovementState(MovementState.Normal);
+        }
+        public void SetMapActive (bool active)
+        {
+            MapPanel.gameObject.SetActive(active);
         }
 #if UNITY_EDITOR
         [Header("Debug")]
