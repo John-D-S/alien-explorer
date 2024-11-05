@@ -10,6 +10,9 @@ TagManager:
   - ClimbZone
   - NoRespawn
   - Terrain
+  - Rock
+  - Plant
+  - Creature
   layers:
   - Default
   - TransparentFX
