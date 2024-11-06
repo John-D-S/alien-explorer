@@ -17,7 +17,8 @@ public class Creature : MonoBehaviour
             }
         }
     }
-    
+
+    public bool staticCreature = false;
     public Transform[] waypoints;
     public GameObject scanMask;
     public Transform spriteTransform;
@@ -62,11 +63,11 @@ public class Creature : MonoBehaviour
         
         // Check if this creature type has been scanned before
         Scanner scanner = FindObjectOfType<Scanner>();
-        if (scanner != null && scanner.HasScannedCreature(creatureData))
+        if (scanner != null && scanner.HasScannedCreature(creatureData) || staticCreature)
         {
             scanMask.SetActive(false);
         }
-        
+
         // Get the NavMeshAgent component
         navAgent = GetComponent<NavMeshAgent>();
     
@@ -76,14 +77,17 @@ public class Creature : MonoBehaviour
             navAgent.enabled = (creatureData.locomotionType == CreatureData.Locomotion.Walking);
         }
         
-        // Initialize movement based on locomotion type
-        if (creatureData.locomotionType == CreatureData.Locomotion.Walking)
-        {
-            StartCoroutine(WalkingBehavior());
-        }
-        else
-        {
-            StartCoroutine(SwimmingFlyingBehavior());
+        if(!staticCreature)
+        {    
+            // Initialize movement based on locomotion type
+            if (creatureData.locomotionType == CreatureData.Locomotion.Walking)
+            {
+                StartCoroutine(WalkingBehavior());
+            }
+            else
+            {
+                StartCoroutine(SwimmingFlyingBehavior());
+            }
         }
     }
 

@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   creatureSprite: {fileID: 21300000, guid: 78fbf63ee41d5c742b1bec5ac8039ac4, type: 3}
   locomotionType: 2
-  ability: 2
+  ability: 3
   habitat: 0
   infoBlurb: With 2 sets of powerful wings and a wind-breaking crest on its head,
     this creature can easily cut through the sky with intense speed.
