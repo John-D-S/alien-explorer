@@ -8,13 +8,19 @@ namespace CharacterSystem
     {
         public TeleporterSystem teleporter;
         private Button button;
+        public PlayerController player;
         void Awake()
         {
             button = GetComponent<Button>();
+
+        }
+        private void Start()
+        {
+            player = FindFirstObjectByType<PlayerController>();
         }
         public void OnPress()
         {
-            teleporter.ButtonPressed();
+            teleporter.ButtonPressed(player);
 
         }
         private void OnEnable()

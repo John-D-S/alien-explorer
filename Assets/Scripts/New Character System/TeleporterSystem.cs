@@ -10,7 +10,7 @@ namespace CharacterSystem
         public Mesh RepairMesh;
         public Material RepairMat;
         public Transform ReceiveDestination;
-        private PlayerController _player;
+        public PlayerController _player;
         private MeshFilter _meshFilter;
         private MeshCollider _meshCollider;
         private MeshRenderer _meshRenderer;
@@ -21,6 +21,7 @@ namespace CharacterSystem
             _meshFilter = GetComponent<MeshFilter>();
             _meshCollider = GetComponent<MeshCollider>();
             _meshRenderer = GetComponent<MeshRenderer>();
+
         }
 
         public void Interact(PlayerController player)
@@ -42,11 +43,11 @@ namespace CharacterSystem
             _meshRenderer.material = RepairMat;
             IsRepaired = true;
         }
-        public void ButtonPressed()
+        public void ButtonPressed(PlayerController player)
         {
-            _player.SetMapActive(false);
-            _player.Teleport(ReceiveDestination.position);
-            _player.SetMovementState(PlayerController.MovementState.Normal);
+            player.SetMapActive(false);
+            player.Teleport(ReceiveDestination.position);
+            player.SetMovementState(PlayerController.MovementState.Normal);
         }
     }
 }
