@@ -8,27 +8,28 @@ using TMPro;
 using UnityEngine.Serialization;
 namespace CharacterSystem
 {
-    [Serializable]
-    public class Upgrade
-    {
-        public bool On;
-        public byte Tokens;
-        public Upgrade ( bool a )
-        {
-            On = a;
-            Tokens = 0;
-        }
-        public Upgrade (bool a, byte b)
-        {
-            On = a;
-            Tokens = b;
-        }
-        public static implicit operator bool(Upgrade up) => up.On;
-    }
 
     [Serializable]
     public class Upgrades
     {
+        [Serializable]
+        public class Upgrade
+        {
+            public bool On;
+            public byte Tokens;
+            public Upgrade(bool a)
+            {
+                On = a;
+                Tokens = 0;
+            }
+            public Upgrade(bool a, byte b)
+            {
+                On = a;
+                Tokens = b;
+            }
+            public static implicit operator bool(Upgrade up) => up.On;
+        }
+
         public Upgrades(bool a, byte b)
         {
             Jump =  new Upgrade(a, b);
@@ -69,7 +70,7 @@ namespace CharacterSystem
         public Button upgradeButtonPrefab;
         public GameObject upgradeUI;
         public int requiredTokenNumber = 4;
-        private Dictionary<TokenType, Upgrade> TokenToUpgrade;
+        private Dictionary<TokenType, Upgrades.Upgrade> TokenToUpgrade;
         private Dictionary<TokenType, Button> upgradeButtons = new Dictionary<TokenType, Button>();
 
         private void Start()
@@ -78,7 +79,7 @@ namespace CharacterSystem
             {
                 Player = FindObjectOfType<PlayerController>();
             }
-            TokenToUpgrade = new Dictionary<TokenType, Upgrade>
+            TokenToUpgrade = new Dictionary<TokenType, Upgrades.Upgrade>
             {
                 {TokenType.Jump, Player.MyUpgrades.Jump},
                 {TokenType.Dash, Player.MyUpgrades.Dash},
@@ -116,7 +117,7 @@ namespace CharacterSystem
 
         public void CollectToken(TokenType upgradeType)
         {
-            Upgrade upgrade = TokenToUpgrade[upgradeType];
+            Upgrades.Upgrade upgrade = TokenToUpgrade[upgradeType];
             if (!upgrade.On)
             {
                 upgrade.Tokens++;
@@ -125,7 +126,7 @@ namespace CharacterSystem
             }
         }
 
-        private void UpdateButtonText(TokenType upgradeType, Upgrade upgrade)
+        private void UpdateButtonText(TokenType upgradeType, Upgrades.Upgrade upgrade)
         {
             TextMeshProUGUI buttonText = upgradeButtons[upgradeType].GetComponentInChildren<TextMeshProUGUI>();
             if (buttonText != null)
@@ -133,7 +134,7 @@ namespace CharacterSystem
                 buttonText.text = $"{upgradeType} ({upgrade.Tokens}/{requiredTokenNumber})";
             }
         }
-        private void UpdateButtonInteractability(TokenType upgradeType, Upgrade upgrade)
+        private void UpdateButtonInteractability(TokenType upgradeType, Upgrades.Upgrade upgrade)
         {
             upgradeButtons[upgradeType].interactable = upgrade.Tokens >= requiredTokenNumber && !upgrade.On;
         }
@@ -156,7 +157,7 @@ namespace CharacterSystem
 
         private void ActivateUpgrade(int index)
         {
-            Upgrade upgrade = TokenToUpgrade[(TokenType)index];
+            Upgrades.Upgrade upgrade = TokenToUpgrade[(TokenType)index];
             if (upgrade.Tokens >= requiredTokenNumber && !upgrade.On)
             {
                 upgrade.On = true;

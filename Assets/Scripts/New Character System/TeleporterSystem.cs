@@ -16,9 +16,6 @@ namespace CharacterSystem
         private MeshRenderer _meshRenderer;
         //public static List<TeleporterSystem> AllTeleporters;
         // Start is called before the first frame update
-        void Awake()
-        {
-        }
         void Start()
         {
             _meshFilter = GetComponent<MeshFilter>();

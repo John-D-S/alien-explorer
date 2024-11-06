@@ -213,7 +213,7 @@ namespace CharacterSystem
                 {
                         bool superJump = MyUpgrades.Jump && _input.superJump;
                         // Request jump if jump input
-                        if ((_input.jump || superJump) && WaterState!=2)
+                        if (_input.jump || superJump)
                         {
                             _timeSinceJumpRequested = 0f;
                             _jumpRequested = true;
@@ -608,7 +608,7 @@ namespace CharacterSystem
 
             if (Motor.GroundingStatus.IsStableOnGround && !Motor.GroundingStatus.GroundCollider.CompareTag("NoRespawn") && _noRespawnTriggerCount < 1)
             {
-                if ((WaterState == 0 || MyUpgrades.Swim) && (HotState == 0 || MyUpgrades.Heat) && (ColdState == 0 || MyUpgrades.Cold) && (Vector3.Dot(Motor.GroundingStatus.OuterGroundNormal, Motor.GroundingStatus.InnerGroundNormal) < 0.85f))
+                if ((WaterState == 0 || MyUpgrades.Swim) && (HotState == 0 || MyUpgrades.Heat) && (ColdState == 0 || MyUpgrades.Cold) && (Vector3.Dot(Motor.GroundingStatus.OuterGroundNormal, Motor.GroundingStatus.InnerGroundNormal) > 0.85f))
                 {
                     RespawnPos = transform.position;
                 }
@@ -637,7 +637,7 @@ namespace CharacterSystem
         protected void OnLanded() { }
         protected void OnLeaveStableGround() { }
         public void OnDiscreteCollisionDetected(Collider hitCollider) { }
-        public void LateUpdate()
+        private void LateUpdate()
         {
             if (MoveState != MovementState.InMenu) 
             {
