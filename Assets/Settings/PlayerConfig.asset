@@ -32,7 +32,7 @@ MonoBehaviour:
   WaterBaseAirSpeed: 3
   WaterAirAccel: 7.5
   WaterAirDrag: 0.8
-  WaterJumpUpSpeed: 3
+  WaterJumpUpSpeed: 0
   WaterTerminalVelocity: 3
   Buoyancy: 25
   ClimbAccel: 50
