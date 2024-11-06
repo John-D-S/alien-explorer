@@ -162,7 +162,7 @@ namespace OldCharacterSystem
             if (swimUpgrade)
             {
                 // Disable collisions with WaterBarrier layer
-                Physics.IgnoreLayerCollision(gameObject.layer, LayerMask.NameToLayer("WaterBarrier"), true);
+                //Physics.IgnoreLayerCollision(gameObject.layer, LayerMask.NameToLayer("WaterBarrier"), true);
 
                 // Check if player is in water
                 isInWater = Physics.CheckSphere(transform.position, controller.radius, LayerMask.GetMask("Water"));
@@ -187,7 +187,7 @@ namespace OldCharacterSystem
             else
             {
                 // Re-enable collisions with WaterBarrier layer if upgrade is not active
-                Physics.IgnoreLayerCollision(gameObject.layer, LayerMask.NameToLayer("WaterBarrier"), false);
+                //Physics.IgnoreLayerCollision(gameObject.layer, LayerMask.NameToLayer("WaterBarrier"), false);
             }
 
             // Glide Upgrade
@@ -207,11 +207,11 @@ namespace OldCharacterSystem
             // Heat and Cold Resistance
             if (heatResist)
             {
-                Physics.IgnoreLayerCollision(gameObject.layer, LayerMask.NameToLayer("HotZone"), true);
+                //Physics.IgnoreLayerCollision(gameObject.layer, LayerMask.NameToLayer("HotZone"), true);
             }
             if (coldResist)
             {
-                Physics.IgnoreLayerCollision(gameObject.layer, LayerMask.NameToLayer("ColdZone"), true);
+                //Physics.IgnoreLayerCollision(gameObject.layer, LayerMask.NameToLayer("ColdZone"), true);
             }
         }
 
