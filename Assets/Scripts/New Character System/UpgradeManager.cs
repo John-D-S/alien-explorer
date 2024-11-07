@@ -1,14 +1,12 @@
 using System;
-
 using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
-
 using TMPro;
 using UnityEngine.Serialization;
+
 namespace CharacterSystem
 {
-
     [Serializable]
     public class Upgrades
     {
@@ -32,13 +30,13 @@ namespace CharacterSystem
 
         public Upgrades(bool a, byte b)
         {
-            Jump =  new Upgrade(a, b);
-            Dash =  new Upgrade(a, b);
-            Swim =  new Upgrade(a, b);
+            Jump = new Upgrade(a, b);
+            Dash = new Upgrade(a, b);
+            Swim = new Upgrade(a, b);
             Glide = new Upgrade(a, b);
-            Heat =  new Upgrade(a, b);
-            Cold =  new Upgrade(a, b);
-            Cut =   new Upgrade(a, b);
+            Heat = new Upgrade(a, b);
+            Cold = new Upgrade(a, b);
+            Cut = new Upgrade(a, b);
             Smash = new Upgrade(a, b);
         }
         public Upgrade Jump;
@@ -65,11 +63,15 @@ namespace CharacterSystem
 
     public class UpgradeManager : MonoBehaviour
     {
-
         public PlayerController Player;
         public Button upgradeButtonPrefab;
         public GameObject upgradeUI;
-        public int requiredTokenNumber = 4;
+        
+        // Replace single requirement with dictionary
+        [SerializeField]
+        private int[] tokenRequirements = new int[8] { 4, 4, 4, 4, 4, 4, 4, 4 };
+        private Dictionary<TokenType, int> requiredTokenNumbers = new Dictionary<TokenType, int>();
+        
         private Dictionary<TokenType, Upgrades.Upgrade> TokenToUpgrade;
         private Dictionary<TokenType, Button> upgradeButtons = new Dictionary<TokenType, Button>();
 
@@ -79,23 +81,30 @@ namespace CharacterSystem
             {
                 Player = FindObjectOfType<PlayerController>();
             }
+
+            // Initialize token requirements
+            for (int i = 0; i < 8; i++)
+            {
+                requiredTokenNumbers[(TokenType)i] = tokenRequirements[i];
+            }
+
             TokenToUpgrade = new Dictionary<TokenType, Upgrades.Upgrade>
             {
                 {TokenType.Jump, Player.MyUpgrades.Jump},
                 {TokenType.Dash, Player.MyUpgrades.Dash},
-                {TokenType.Swim , Player.MyUpgrades.Swim},
-                {TokenType.Glide , Player.MyUpgrades.Glide},
-                {TokenType.Heat , Player.MyUpgrades.Heat},
-                {TokenType.Cold , Player.MyUpgrades.Cold},
-                {TokenType.Cut , Player.MyUpgrades.Cut},
-                {TokenType.Smash , Player.MyUpgrades.Smash}
+                {TokenType.Swim, Player.MyUpgrades.Swim},
+                {TokenType.Glide, Player.MyUpgrades.Glide},
+                {TokenType.Heat, Player.MyUpgrades.Heat},
+                {TokenType.Cold, Player.MyUpgrades.Cold},
+                {TokenType.Cut, Player.MyUpgrades.Cut},
+                {TokenType.Smash, Player.MyUpgrades.Smash}
             };
             InitializeUpgradeUI();
         }
 
         private void InitializeUpgradeUI()
         {
-            for (int i=0; i<8; i++)
+            for (int i = 0; i < 8; i++)
             {
                 Button button = Instantiate(upgradeButtonPrefab, upgradeUI.transform);
                 TextMeshProUGUI buttonText = button.GetComponentInChildren<TextMeshProUGUI>();
@@ -105,13 +114,14 @@ namespace CharacterSystem
                     Debug.LogError("Button prefab does not contain a TextMeshProUGUI component");
                     continue;
                 }
-                
-                buttonText.text = $"{(TokenType)i} ({TokenToUpgrade[(TokenType)i].Tokens}/{requiredTokenNumber})";
+
+                TokenType tokenType = (TokenType)i;
+                buttonText.text = $"{tokenType} ({TokenToUpgrade[tokenType].Tokens}/{requiredTokenNumbers[tokenType]})";
                 int _i = i;
                 button.onClick.AddListener(delegate { ActivateUpgrade(_i); });
 
-                upgradeButtons[(TokenType)i] = button;
-                UpdateButtonInteractability((TokenType)i, TokenToUpgrade[(TokenType)i]);
+                upgradeButtons[tokenType] = button;
+                UpdateButtonInteractability(tokenType, TokenToUpgrade[tokenType]);
             }
         }
 
@@ -131,18 +141,18 @@ namespace CharacterSystem
             TextMeshProUGUI buttonText = upgradeButtons[upgradeType].GetComponentInChildren<TextMeshProUGUI>();
             if (buttonText != null)
             {
-                buttonText.text = $"{upgradeType} ({upgrade.Tokens}/{requiredTokenNumber})";
+                buttonText.text = $"{upgradeType} ({upgrade.Tokens}/{requiredTokenNumbers[upgradeType]})";
             }
         }
+
         private void UpdateButtonInteractability(TokenType upgradeType, Upgrades.Upgrade upgrade)
         {
-            upgradeButtons[upgradeType].interactable = upgrade.Tokens >= requiredTokenNumber && !upgrade.On;
+            upgradeButtons[upgradeType].interactable = upgrade.Tokens >= requiredTokenNumbers[upgradeType] && !upgrade.On;
         }
 
         public void ShowUpgradeUI()
         {
             upgradeUI.SetActive(true);
-            //Time.timeScale = 0f; // Pause time
             Cursor.lockState = CursorLockMode.None;
             Cursor.visible = true;
         }
@@ -150,20 +160,19 @@ namespace CharacterSystem
         public void HideUpgradeUI()
         {
             upgradeUI.SetActive(false);
-            //Time.timeScale = 1f; // Resume time
             Cursor.lockState = CursorLockMode.Locked;
             Cursor.visible = false;
         }
 
         private void ActivateUpgrade(int index)
         {
-            Upgrades.Upgrade upgrade = TokenToUpgrade[(TokenType)index];
-            if (upgrade.Tokens >= requiredTokenNumber && !upgrade.On)
+            TokenType tokenType = (TokenType)index;
+            Upgrades.Upgrade upgrade = TokenToUpgrade[tokenType];
+            if (upgrade.Tokens >= requiredTokenNumbers[tokenType] && !upgrade.On)
             {
                 upgrade.On = true;
-                UpdateButtonInteractability((TokenType)index, upgrade);
-
-                Debug.Log(((TokenType)index).ToString() + " upgrade activated!");
+                UpdateButtonInteractability(tokenType, upgrade);
+                Debug.Log($"{tokenType} upgrade activated!");
             }
         }
     }
