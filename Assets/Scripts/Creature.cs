@@ -5,10 +5,10 @@ using System.Collections;
 public class Creature : MonoBehaviour
 {
     [SerializeField] private CreatureData _creatureData;
-    public CreatureData creatureData 
+    public CreatureData creatureData
     {
         get => _creatureData;
-        set 
+        set
         {
             _creatureData = value;
             if (value != null && spriteRenderer != null)
@@ -17,16 +17,16 @@ public class Creature : MonoBehaviour
             }
         }
     }
-    
-    public Transform[] waypoints;
+
+    [SerializeField] private WaypointGroup waypointGroup;
     public GameObject scanMask;
     public Transform spriteTransform;
-    
+
     // Movement settings
     [SerializeField] private float minWaitTime = 5f;
     [SerializeField] private float maxWaitTime = 15f;
     [SerializeField] private float moveSpeed = 5f;
-    
+
     // Component references
     private NavMeshAgent navAgent;
     private SpriteRenderer spriteRenderer;
@@ -34,7 +34,7 @@ public class Creature : MonoBehaviour
     private bool isMoving = false;
     private Transform mainCameraTransform;
 
-    #if UNITY_EDITOR
+#if UNITY_EDITOR
     private void OnValidate()
     {
         // Update sprite when creature data is changed in inspector
@@ -47,35 +47,42 @@ public class Creature : MonoBehaviour
             }
         }
     }
-    #endif
+#endif
 
     private void Start()
     {
+        if (waypointGroup == null || waypointGroup.waypoints.Count == 0)
+        {
+            Debug.LogError($"Creature {gameObject.name} is missing WaypointGroup or has no waypoints!");
+            enabled = false;
+            return;
+        }
+
         // Get and setup the sprite renderer from the child object
         spriteRenderer = spriteTransform.GetComponent<SpriteRenderer>();
         if (creatureData != null)
         {
             spriteRenderer.sprite = creatureData.creatureSprite;
         }
-        
+
         mainCameraTransform = Camera.main.transform;
-        
+
         // Check if this creature type has been scanned before
         Scanner scanner = FindObjectOfType<Scanner>();
         if (scanner != null && scanner.HasScannedCreature(creatureData))
         {
             scanMask.SetActive(false);
         }
-        
+
         // Get the NavMeshAgent component
         navAgent = GetComponent<NavMeshAgent>();
-    
+
         // Enable/disable NavMeshAgent based on locomotion type
         if (navAgent != null)
         {
             navAgent.enabled = (creatureData.locomotionType == CreatureData.Locomotion.Walking);
         }
-        
+
         // Initialize movement based on locomotion type
         if (creatureData.locomotionType == CreatureData.Locomotion.Walking)
         {
@@ -102,9 +109,9 @@ public class Creature : MonoBehaviour
             {
                 moveDirection = navAgent.velocity;
             }
-            else if (currentWaypointIndex >= 0 && currentWaypointIndex < waypoints.Length)
+            else if (currentWaypointIndex >= 0 && currentWaypointIndex < waypointGroup.waypoints.Count)
             {
-                moveDirection = (waypoints[currentWaypointIndex].position - transform.position).normalized;
+                moveDirection = (waypointGroup.waypoints[currentWaypointIndex].position - transform.position).normalized;
             }
             else
             {
@@ -113,7 +120,7 @@ public class Creature : MonoBehaviour
 
             // Project movement direction onto camera's right vector to determine if moving left or right
             float dotProduct = Vector3.Dot(moveDirection.normalized, mainCameraTransform.right);
-            
+
             // Flip sprite based on movement direction relative to camera view
             if (Mathf.Abs(dotProduct) > 0.1f) // Only flip if there's significant horizontal movement
             {
@@ -121,8 +128,7 @@ public class Creature : MonoBehaviour
             }
         }
     }
-    
-    // Add this method to Creature.cs
+
     private bool IsWaypointOnGround(Vector3 position)
     {
         // Cast a short ray downward from slightly above the position
@@ -139,16 +145,16 @@ public class Creature : MonoBehaviour
         while (true)
         {
             // Choose random waypoint
-            int newIndex = Random.Range(0, waypoints.Length);
+            int newIndex = Random.Range(0, waypointGroup.waypoints.Count);
             currentWaypointIndex = newIndex;
-            
+
             // Move to waypoint
-            navAgent.SetDestination(waypoints[currentWaypointIndex].position);
-            
+            navAgent.SetDestination(waypointGroup.waypoints[currentWaypointIndex].position);
+
             // Wait until reaching destination
             while (navAgent.pathStatus != NavMeshPathStatus.PathComplete)
                 yield return null;
-                
+
             // Random wait at waypoint
             float waitTime = Random.Range(minWaitTime, maxWaitTime);
             yield return new WaitForSeconds(waitTime);
@@ -160,28 +166,28 @@ public class Creature : MonoBehaviour
         while (true)
         {
             // Choose random waypoint (not current)
-            int newIndex = Random.Range(0, waypoints.Length);
-            while (newIndex == currentWaypointIndex)
+            int newIndex = Random.Range(0, waypointGroup.waypoints.Count);
+            while (newIndex == currentWaypointIndex && waypointGroup.waypoints.Count > 1)
             {
-                newIndex = Random.Range(0, waypoints.Length);
+                newIndex = Random.Range(0, waypointGroup.waypoints.Count);
             }
-            
-            Vector3 target = waypoints[newIndex].position;
-            
+
+            Vector3 target = waypointGroup.waypoints[newIndex].position;
+
             // Check for obstacles with spherecast
-            if (!Physics.SphereCast(transform.position, 0.5f, (target - transform.position).normalized, 
+            if (!Physics.SphereCast(transform.position, 0.5f, (target - transform.position).normalized,
                 out RaycastHit hit, Vector3.Distance(transform.position, target)))
             {
                 currentWaypointIndex = newIndex;
                 isMoving = true;
-                
+
                 // Lerp to new position
                 float startTime = Time.time;
                 float journeyLength = Vector3.Distance(transform.position, target);
-                float duration = journeyLength / moveSpeed; // Time = Distance / Speed
+                float duration = journeyLength / moveSpeed;
                 Vector3 startPos = transform.position;
                 float elapsedTime = 0f;
-                
+
                 while (elapsedTime < duration)
                 {
                     elapsedTime += Time.deltaTime;
@@ -190,9 +196,8 @@ public class Creature : MonoBehaviour
                     yield return null;
                 }
 
-                
                 isMoving = false;
-                
+
                 // For flying creatures, wait longer if on ground
                 if (creatureData.locomotionType == CreatureData.Locomotion.Flying && IsWaypointOnGround(transform.position))
                 {
