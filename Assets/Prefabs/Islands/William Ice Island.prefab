@@ -14103,6 +14103,39 @@ Transform:
   m_Father: {fileID: 6675886331349000807}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &7155542117893712818
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 9536f0e1b7536c943a04b998ffe64feb,
+    type: 3}
+  m_PrefabInstance: {fileID: 1410866372163062885}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1449840225750592398}
+  m_Layer: 0
+  m_Name: 'Big moautin parkour (Missing Prefab with guid: 9536f0e1b7536c943a04b998ffe64feb)'
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1449840225750592398
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 9536f0e1b7536c943a04b998ffe64feb,
+    type: 3}
+  m_PrefabInstance: {fileID: 1410866372163062885}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7155542117893712818}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 6675886329960848147}
+  m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1410866372163062885
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -14187,12 +14220,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 9536f0e1b7536c943a04b998ffe64feb, type: 3}
---- !u!4 &1449840225750592398 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 9536f0e1b7536c943a04b998ffe64feb,
-    type: 3}
-  m_PrefabInstance: {fileID: 1410866372163062885}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1735753615421775742
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -85968,7 +85995,7 @@ PrefabInstance:
     - target: {fileID: 919132149155446097, guid: 5b2610c6d01a01e479ea6e9b59cf5132,
         type: 3}
       propertyPath: m_Name
-      value: big m,ouatin
+      value: big mOUATIN
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5b2610c6d01a01e479ea6e9b59cf5132, type: 3}
