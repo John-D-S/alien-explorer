@@ -134,7 +134,7 @@ MonoBehaviour:
   upgradeType: Swim
   _creatureData: {fileID: 11400000, guid: b3bbbbc449715734d9ed4d37378ef64e, type: 2}
   staticCreature: 0
-  waypoints: []
+  waypointGroup: {fileID: 0}
   scanMask: {fileID: 1076884677066424134}
   spriteTransform: {fileID: 5801426734538150303}
   minWaitTime: 0

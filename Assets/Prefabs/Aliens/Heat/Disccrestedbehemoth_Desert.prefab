@@ -50,7 +50,7 @@ MonoBehaviour:
   upgradeType: Heat
   _creatureData: {fileID: 11400000, guid: 64271a1bed685be41b0d365fdc7c2759, type: 2}
   staticCreature: 0
-  waypoints: []
+  waypointGroup: {fileID: 0}
   scanMask: {fileID: 4131786879065964226}
   spriteTransform: {fileID: 4131786877840521535}
   minWaitTime: 0

@@ -233,7 +233,7 @@ MonoBehaviour:
   upgradeType: Cold
   _creatureData: {fileID: 11400000, guid: 4b3c12588e4114147a98f317636bdd7a, type: 2}
   staticCreature: 0
-  waypoints: []
+  waypointGroup: {fileID: 0}
   scanMask: {fileID: 738323565621547479}
   spriteTransform: {fileID: 738323566611385072}
   minWaitTime: 0

@@ -50,7 +50,7 @@ MonoBehaviour:
   upgradeType: Cut
   _creatureData: {fileID: 11400000, guid: 25875bd5d0af3594792e5d7de936e973, type: 2}
   staticCreature: 0
-  waypoints: []
+  waypointGroup: {fileID: 0}
   scanMask: {fileID: 7942328755406067606}
   spriteTransform: {fileID: 7942328755291610686}
   minWaitTime: 0

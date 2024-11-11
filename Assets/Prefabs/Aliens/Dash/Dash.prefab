@@ -50,7 +50,7 @@ MonoBehaviour:
   upgradeType: Jump
   _creatureData: {fileID: 11400000, guid: f6adafee6b96c874daf84b5302cbcbc8, type: 2}
   staticCreature: 0
-  waypoints: []
+  waypointGroup: {fileID: 0}
   scanMask: {fileID: 6295013063043114584}
   spriteTransform: {fileID: 4677628459103421632}
   minWaitTime: 0

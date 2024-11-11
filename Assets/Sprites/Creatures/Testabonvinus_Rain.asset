@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   creatureSprite: {fileID: 21300000, guid: f2bfdb3578693694bbc521b63f371b2e, type: 3}
   locomotionType: 2
-  ability: 2
+  ability: 3
   habitat: 1
   infoBlurb: With such a large, heavy body, this creature has developed extremely
     powerful wings to maintain flight over long distances.

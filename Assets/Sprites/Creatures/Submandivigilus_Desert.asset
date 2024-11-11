@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   creatureSprite: {fileID: 21300000, guid: 70bcf9a3a6abfc54da700f52b60a3de5, type: 3}
   locomotionType: 1
-  ability: 3
+  ability: 2
   habitat: 0
   infoBlurb: Featuring dramatic sails and fins, this creature contains strong power
     when swimming through the ocean.

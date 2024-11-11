@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   creatureSprite: {fileID: 21300000, guid: f48aa33b24bdeca42b2d65dc8e3dda70, type: 3}
   locomotionType: 2
-  ability: 2
+  ability: 3
   habitat: 2
   infoBlurb: With giant wings, this creature has no trouble navigating snow storms
     or dark windy nights.

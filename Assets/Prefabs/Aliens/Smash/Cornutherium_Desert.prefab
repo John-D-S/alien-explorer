@@ -233,7 +233,7 @@ MonoBehaviour:
   upgradeType: Smash
   _creatureData: {fileID: 11400000, guid: 1a8511283f1b65a4587604dfba12a434, type: 2}
   staticCreature: 0
-  waypoints: []
+  waypointGroup: {fileID: 0}
   scanMask: {fileID: 6985610641993833121}
   spriteTransform: {fileID: 6985610642452054736}
   minWaitTime: 0

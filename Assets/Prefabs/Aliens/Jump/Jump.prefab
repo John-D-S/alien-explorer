@@ -233,7 +233,7 @@ MonoBehaviour:
   upgradeType: Dash
   _creatureData: {fileID: 11400000, guid: f7cdcdc0cc058d14483251d832b3ecc6, type: 2}
   staticCreature: 0
-  waypoints: []
+  waypointGroup: {fileID: 0}
   scanMask: {fileID: 757283756259685120}
   spriteTransform: {fileID: 5117646110446488372}
   minWaitTime: 0

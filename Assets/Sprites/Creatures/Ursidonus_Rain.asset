@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   creatureSprite: {fileID: 21300000, guid: 9fe94eef5cca94540b3d8e1e40df44e4, type: 3}
   locomotionType: 2
-  ability: 2
+  ability: 3
   habitat: 1
   infoBlurb: This creature has developed strong wings to push through the intense
     rain and climte it finds itself in.

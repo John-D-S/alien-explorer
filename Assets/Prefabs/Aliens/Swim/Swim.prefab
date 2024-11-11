@@ -230,10 +230,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   validateTrigger: 0
-  upgradeType: Glide
+  upgradeType: Swim
   _creatureData: {fileID: 11400000, guid: af8c94418a3f6a741935626b563eeb03, type: 2}
   staticCreature: 0
-  waypoints: []
+  waypointGroup: {fileID: 0}
   scanMask: {fileID: 6171003233610267473}
   spriteTransform: {fileID: 8913262289161503147}
   minWaitTime: 0
