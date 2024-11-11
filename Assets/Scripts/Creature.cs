@@ -75,9 +75,7 @@ public class Creature : MonoBehaviour
     {
         if (!staticCreature && (waypointGroup == null || waypointGroup.waypoints.Count == 0))
         {
-            Debug.LogError($"Moving Creature {gameObject.name} is missing WaypointGroup or has no waypoints!");
-            enabled = false;
-            return;
+            staticCreature = true;
         }
 
         // Get and setup the sprite renderer from the child object
@@ -169,6 +167,12 @@ public class Creature : MonoBehaviour
     {
         while (true)
         {
+            if(!navAgent.isOnNavMesh)
+            {
+                Debug.Log($"{this.name}");
+                break;
+            }
+            
             // Choose random waypoint
             int newIndex = Random.Range(0, waypointGroup.waypoints.Count);
             currentWaypointIndex = newIndex;

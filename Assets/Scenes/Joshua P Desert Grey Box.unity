@@ -2240,6 +2240,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 211772913034012962, guid: 494cc76db9356324b94953bb24f8ad47,
+        type: 3}
+      propertyPath: far clip plane
+      value: 2500
+      objectReference: {fileID: 0}
     - target: {fileID: 211772913034012965, guid: 494cc76db9356324b94953bb24f8ad47,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -7978,36 +7983,13 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2065469738}
-  - component: {fileID: 2065469737}
   m_Layer: 0
   m_Name: Aliens
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!195 &2065469737
-NavMeshAgent:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2065469736}
-  m_Enabled: 1
-  m_AgentTypeID: 0
-  m_Radius: 0.5
-  m_Speed: 3.5
-  m_Acceleration: 8
-  avoidancePriority: 50
-  m_AngularSpeed: 120
-  m_StoppingDistance: 0
-  m_AutoTraverseOffMeshLink: 1
-  m_AutoBraking: 1
-  m_AutoRepath: 1
-  m_Height: 2
-  m_BaseOffset: 0
-  m_WalkableMask: 4294967295
-  m_ObstacleAvoidanceType: 4
+  m_IsActive: 0
 --- !u!4 &2065469738
 Transform:
   m_ObjectHideFlags: 0
@@ -8725,6 +8707,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalPosition.z
       value: 225.93
+      objectReference: {fileID: 0}
+    - target: {fileID: 5633234064264943306, guid: 51995da4e6898064c9020a68b8774ae6,
+        type: 3}
+      propertyPath: m_UseGeometry
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5633234064264943306, guid: 51995da4e6898064c9020a68b8774ae6,
+        type: 3}
+      propertyPath: m_LayerMask.m_Bits
+      value: 43
       objectReference: {fileID: 0}
     - target: {fileID: 6110934490438052691, guid: 51995da4e6898064c9020a68b8774ae6,
         type: 3}

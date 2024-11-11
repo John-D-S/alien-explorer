@@ -19,9 +19,9 @@ public class WaypointGroup : MonoBehaviour
     private void SetWaypointOnGround(Transform waypointTransform)
     {
         RaycastHit hit;
-        Vector3 startPos = waypointTransform.position + Vector3.up * 100f;
+        Vector3 startPos = waypointTransform.position + Vector3.up * maxHeight;
         
-        if (Physics.Raycast(startPos, Vector3.down, out hit, 200f))
+        if (Physics.Raycast(startPos, Vector3.down, out hit, 200f, -1, QueryTriggerInteraction.Ignore))
         {
             waypointTransform.position = hit.point + Vector3.up * heightAboveGround;
         }
