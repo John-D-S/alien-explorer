@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   creatureSprite: {fileID: 21300000, guid: 00ccd348b0bf8cb48aa1538ab9a48a7d, type: 3}
   locomotionType: 1
-  ability: 3
+  ability: 2
   habitat: 1
   infoBlurb: featuring a large number of fins, this allows the alien to quickly manevour
     around in water.

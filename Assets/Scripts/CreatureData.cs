@@ -15,7 +15,6 @@ public class CreatureData : ScriptableObject
 		Flying
 	}
     
-    
 	public enum Habitat
 	{
 		Desert,

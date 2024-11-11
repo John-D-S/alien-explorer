@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   creatureSprite: {fileID: 21300000, guid: 6b50d1a5f5db8b94d9ae72980c8bd40e, type: 3}
   locomotionType: 1
-  ability: 3
+  ability: 2
   habitat: 4
   infoBlurb: With huge fins porpelling its body through the water, this creatures
     strengths lie in its great ability at swimming.

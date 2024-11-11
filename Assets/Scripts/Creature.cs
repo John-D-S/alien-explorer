@@ -2,8 +2,16 @@ using UnityEngine;
 using UnityEngine.AI;
 using System.Collections;
 
+using UnityEditor;
+
 public class Creature : MonoBehaviour
 {
+    // Dummy checkbox for validation
+    [SerializeField] private bool validateTrigger;
+    
+    // Read-only field to display upgrade type
+    [SerializeField] private string upgradeType;
+    
     [SerializeField] private CreatureData _creatureData;
     public CreatureData creatureData 
     {
@@ -38,14 +46,28 @@ public class Creature : MonoBehaviour
     #if UNITY_EDITOR
     private void OnValidate()
     {
+        validateTrigger = false;
         // Update sprite when creature data is changed in inspector
-        if (_creatureData != null && spriteTransform != null)
+        if (_creatureData != null)
         {
-            spriteRenderer = spriteTransform.GetComponent<SpriteRenderer>();
-            if (spriteRenderer != null)
+            // Update GameObject name to match creature data if different
+            if (gameObject.name != _creatureData.name)
             {
-                spriteRenderer.sprite = _creatureData.creatureSprite;
+                gameObject.name = _creatureData.name;
             }
+            
+            // Update sprite if available
+            if (spriteTransform != null)
+            {
+                spriteRenderer = spriteTransform.GetComponent<SpriteRenderer>();
+                if (spriteRenderer != null)
+                {
+                    spriteRenderer.sprite = _creatureData.creatureSprite;
+                }
+            }
+
+            // Update the upgrade type display
+            upgradeType = _creatureData.ability.ToString();
         }
     }
     #endif
@@ -216,3 +238,25 @@ public class Creature : MonoBehaviour
         scanMask.SetActive(false);
     }
 }
+
+#if UNITY_EDITOR
+[CustomEditor(typeof(Creature))]
+public class CreatureEditor : Editor
+{
+    public override void OnInspectorGUI()
+    {
+        Creature creature = (Creature)target;
+        
+        // Draw the default inspector excluding our custom fields
+        DrawPropertiesExcluding(serializedObject, "upgradeType");
+        
+        // Draw the read-only upgrade type field
+        EditorGUI.BeginDisabledGroup(true);
+        EditorGUILayout.TextField("Upgrade Type", serializedObject.FindProperty("upgradeType").stringValue);
+        EditorGUI.EndDisabledGroup();
+        
+        // Apply any changes
+        serializedObject.ApplyModifiedProperties();
+    }
+}
+#endif

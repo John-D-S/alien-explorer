@@ -130,6 +130,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fa6ae70e71a1a3944b16af310083bb3f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  validateTrigger: 0
+  upgradeType: Swim
   _creatureData: {fileID: 11400000, guid: b3bbbbc449715734d9ed4d37378ef64e, type: 2}
   staticCreature: 0
   waypoints: []

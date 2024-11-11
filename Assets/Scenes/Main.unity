@@ -453,6 +453,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6635738727509388204, guid: 27a62b417c20e374aaf07c28f7b35926,
         type: 3}
+      propertyPath: _player
+      value: 
+      objectReference: {fileID: 178313179}
+    - target: {fileID: 6635738727509388204, guid: 27a62b417c20e374aaf07c28f7b35926,
+        type: 3}
       propertyPath: IsRepaired
       value: 0
       objectReference: {fileID: 0}
@@ -5865,6 +5870,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Teleporter Ice (4)
       objectReference: {fileID: 0}
+    - target: {fileID: 6635738727509388204, guid: 27a62b417c20e374aaf07c28f7b35926,
+        type: 3}
+      propertyPath: _player
+      value: 
+      objectReference: {fileID: 178313179}
     - target: {fileID: 6635738727509388204, guid: 27a62b417c20e374aaf07c28f7b35926,
         type: 3}
       propertyPath: IsRepaired
@@ -57776,6 +57786,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6635738727509388204, guid: 27a62b417c20e374aaf07c28f7b35926,
         type: 3}
+      propertyPath: _player
+      value: 
+      objectReference: {fileID: 178313179}
+    - target: {fileID: 6635738727509388204, guid: 27a62b417c20e374aaf07c28f7b35926,
+        type: 3}
       propertyPath: IsRepaired
       value: 0
       objectReference: {fileID: 0}
@@ -80531,6 +80546,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Teleporter Ice (3)
       objectReference: {fileID: 0}
+    - target: {fileID: 6635738727509388204, guid: 27a62b417c20e374aaf07c28f7b35926,
+        type: 3}
+      propertyPath: _player
+      value: 
+      objectReference: {fileID: 178313179}
     - target: {fileID: 6635738727509388204, guid: 27a62b417c20e374aaf07c28f7b35926,
         type: 3}
       propertyPath: IsRepaired

@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   creatureSprite: {fileID: 21300000, guid: 731016ebca0ba274c9c081d833ffe03b, type: 3}
   locomotionType: 1
-  ability: 3
+  ability: 2
   habitat: 2
   infoBlurb: This aquatic creatures vertical tail wields great force to effectively
     cut through water with great speed.

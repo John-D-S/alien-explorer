@@ -49,9 +49,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   IsRepaired: 1
-  RepairMesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
+  RepairMesh: {fileID: 7672556197880047681, guid: 8454bee35cd25ca4e80f321520a0a65e,
+    type: 3}
   RepairMat: {fileID: 2100000, guid: d16efd325c39c84409992d98ecdd4fb1, type: 2}
   ReceiveDestination: {fileID: 6635738727930404721}
+  _player: {fileID: 0}
 --- !u!33 &6635738727509388193
 MeshFilter:
   m_ObjectHideFlags: 0
