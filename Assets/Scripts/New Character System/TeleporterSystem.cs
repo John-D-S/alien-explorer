@@ -12,14 +12,12 @@ namespace CharacterSystem
         public Transform ReceiveDestination;
         public PlayerController _player;
         private MeshFilter _meshFilter;
-        private MeshCollider _meshCollider;
         private MeshRenderer _meshRenderer;
         //public static List<TeleporterSystem> AllTeleporters;
         // Start is called before the first frame update
         void Start()
         {
             _meshFilter = GetComponent<MeshFilter>();
-            _meshCollider = GetComponent<MeshCollider>();
             _meshRenderer = GetComponent<MeshRenderer>();
 
         }
@@ -39,7 +37,6 @@ namespace CharacterSystem
         void Repair()
         {
             _meshFilter.mesh = RepairMesh;
-            _meshCollider.sharedMesh = RepairMesh;
             _meshRenderer.material = RepairMat;
             IsRepaired = true;
         }
